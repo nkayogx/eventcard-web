@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+/*
+  Our colours and fonts in one place.
+  Use them in class names, e.g. "bg-brand", "text-ink-soft".
+*/
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --color-brand: #7a1f3d;
+  --color-brand-dark: #5c1530;
+  --color-brand-soft: #f7e9ee;
+
+  --color-ink: #1f1a1c;
+  --color-ink-soft: #6b6266;
+  --color-line: #e8e2e4;
+  --color-paper: #fbf9f8;
+
+  --color-danger: #b42318;
+  --color-danger-soft: #fdecea;
+  --color-success: #1f7a4d;
+  --color-success-soft: #e6f4ec;
+  --color-warning-soft: #fff4e0;
+}
+
+body {
+  @apply bg-paper text-ink font-sans antialiased;
+}
