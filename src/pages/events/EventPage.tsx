@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { eventTypeNames } from '../../api/types'
 import { ErrorBox } from '../../components/ui'
+import { CardDesignTab } from './CardDesignTab'
 import { CardTypesTab } from './CardTypesTab'
 import { EventStatusBadge, formatEventDate, useEvent } from './eventHelpers'
 import { GuestsTab } from './GuestsTab'
@@ -53,14 +54,7 @@ export function EventPage() {
       {openTab === 'Overview' && <OverviewTab event={details} />}
       {openTab === 'Guests' && <GuestsTab event={details} />}
       {openTab === 'Card types' && <CardTypesTab event={details} />}
-      {openTab === 'Card design' && (
-        <div className="rounded-xl border border-dashed border-line bg-white p-10 text-center">
-          <p className="font-medium">Card design is coming in the next part</p>
-          <p className="mt-1 text-sm text-ink-soft">
-            You'll design the invitation card here, using your brand colours and logo.
-          </p>
-        </div>
-      )}
+      {openTab === 'Card design' && <CardDesignTab event={details} />}
     </div>
   )
 }

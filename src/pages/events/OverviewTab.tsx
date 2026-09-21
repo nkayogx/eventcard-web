@@ -128,6 +128,26 @@ export function OverviewTab({ event }: { event: EventDetails }) {
           </ul>
         </Card>
 
+        <Card>
+          <h2 className="font-semibold">RSVP answers</h2>
+          <ul className="mt-3 space-y-1 text-sm">
+            <li className="flex justify-between">
+              <span>Attending</span>
+              <span className="text-ink-soft">
+                {countOf(event.rsvp.attendingCards, 'card')} · {countOf(event.rsvp.attendingPeople, 'person', 'people')}
+              </span>
+            </li>
+            <li className="flex justify-between">
+              <span>Not attending</span>
+              <span className="text-ink-soft">{countOf(event.rsvp.notAttendingCards, 'card')}</span>
+            </li>
+            <li className="flex justify-between">
+              <span>No reply yet</span>
+              <span className="text-ink-soft">{countOf(event.rsvp.noReplyCards, 'card')}</span>
+            </li>
+          </ul>
+        </Card>
+
         {event.groups.length > 0 && (
           <Card>
             <h2 className="font-semibold">By group</h2>

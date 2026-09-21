@@ -35,6 +35,7 @@ export interface CustomDomainSetup {
   verified: boolean
   txtRecordName: string
   txtRecordValue: string
+  cnameTarget: string | null
 }
 
 export interface CompanyDetails {
@@ -170,6 +171,22 @@ export interface EventDetails {
   groups: GroupTotals[]
   totalCards: number
   totalSeats: number
+  rsvp: RsvpTotals
+}
+
+export interface RsvpTotals {
+  attendingCards: number
+  attendingPeople: number
+  notAttendingCards: number
+  noReplyCards: number
+}
+
+export type RsvpStatus = 'NO_REPLY' | 'ATTENDING' | 'NOT_ATTENDING'
+
+export const rsvpNames: Record<RsvpStatus, string> = {
+  NO_REPLY: 'No reply',
+  ATTENDING: 'Attending',
+  NOT_ATTENDING: 'Not attending',
 }
 
 export interface Guest {
@@ -181,6 +198,11 @@ export interface Guest {
   seats: number
   groupName: string | null
   notes: string | null
+  invitationCode: string
+  invitationLink: string
+  rsvpStatus: RsvpStatus
+  rsvpPeople: number | null
+  rsvpMessage: string | null
 }
 
 export interface GuestPage {
@@ -213,4 +235,94 @@ export interface ImportResult {
   importedCount: number
   problems: ImportProblem[]
   duplicates: ImportDuplicate[]
+}
+
+// ---------- Card design ----------
+
+export type CardDesignKind = 'UPLOADED' | 'TEMPLATE'
+export type CardTemplate = 'CLASSIC' | 'ELEGANT' | 'MODERN'
+export type CardField = 'GUEST_NAME' | 'CARD_TYPE' | 'QR_CODE'
+export type CardFont = 'PLAYFAIR' | 'PLAYFAIR_BOLD' | 'MONTSERRAT' | 'MONTSERRAT_BOLD' | 'GREAT_VIBES'
+export type TextAlign = 'LEFT' | 'CENTER' | 'RIGHT'
+
+export const templateNames: Record<CardTemplate, string> = {
+  CLASSIC: 'Classic',
+  ELEGANT: 'Elegant',
+  MODERN: 'Modern',
+}
+
+export const fieldNames: Record<CardField, string> = {
+  GUEST_NAME: 'Guest name',
+  CARD_TYPE: 'Card type',
+  QR_CODE: 'QR code',
+}
+
+export const fontNames: Record<CardFont, string> = {
+  PLAYFAIR: 'Playfair (elegant)',
+  PLAYFAIR_BOLD: 'Playfair bold',
+  MONTSERRAT: 'Montserrat (clean)',
+  MONTSERRAT_BOLD: 'Montserrat bold',
+  GREAT_VIBES: 'Great Vibes (script)',
+}
+
+/** One box on an uploaded design. Positions and sizes are percent of the picture. */
+export interface FieldSettings {
+  field: CardField
+  x: number
+  y: number
+  width: number
+  height: number
+  font: CardFont
+  fontSize: number
+  color: string
+  align: TextAlign
+  visible: boolean
+}
+
+export interface CardTypeLook {
+  id: string
+  name: string
+  seats: number
+  backgroundUrl: string | null
+}
+
+export interface CardDesignDetails {
+  kind: CardDesignKind
+  templateName: CardTemplate
+  invitationText: string
+  backgroundUrl: string | null
+  width: number | null
+  height: number | null
+  version: number
+  fields: FieldSettings[]
+  cardTypes: CardTypeLook[]
+}
+
+// ---------- Public invitation page ----------
+
+export interface InvitationPage {
+  guestName: string
+  cardTypeName: string
+  seats: number
+  cardImagePath: string
+  rsvpStatus: RsvpStatus
+  rsvpPeople: number | null
+  rsvpMessage: string | null
+  rsvpOpen: boolean
+  rsvpDeadline: string | null
+  event: {
+    name: string
+    eventType: EventType
+    hostNames: string | null
+    startsAt: string
+    endsAt: string | null
+    timeZone: string
+    venueName: string
+    venueAddress: string | null
+    mapLink: string | null
+    dressCode: string | null
+    extraInfo: string | null
+    contactPhone: string | null
+  }
+  company: { name: string; logoUrl: string | null; primaryColor: string | null; secondaryColor: string | null }
 }

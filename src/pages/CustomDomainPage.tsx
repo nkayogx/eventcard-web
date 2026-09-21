@@ -64,7 +64,7 @@ export function CustomDomainPage() {
           {!domain.verified && (
             <>
               <p className="text-sm text-ink-soft">
-                Log in to the company where you bought your domain and add this DNS record. Then press "Verify".
+                Log in to the company where you bought your domain and add these two DNS records. Then press "Verify".
               </p>
               <dl className="grid gap-2 rounded-lg bg-paper p-4 text-sm sm:grid-cols-[120px_1fr]">
                 <dt className="text-ink-soft">Type</dt>
@@ -74,6 +74,16 @@ export function CustomDomainPage() {
                 <dt className="text-ink-soft">Value</dt>
                 <dd className="font-mono break-all">{domain.txtRecordValue}</dd>
               </dl>
+              {domain.cnameTarget && (
+                <dl className="grid gap-2 rounded-lg bg-paper p-4 text-sm sm:grid-cols-[120px_1fr]">
+                  <dt className="text-ink-soft">Type</dt>
+                  <dd className="font-mono">CNAME</dd>
+                  <dt className="text-ink-soft">Name / Host</dt>
+                  <dd className="font-mono break-all">{domain.domain}</dd>
+                  <dt className="text-ink-soft">Points to</dt>
+                  <dd className="font-mono break-all">{domain.cnameTarget}</dd>
+                </dl>
+              )}
               {verify.error && <p className="text-sm text-danger">{(verify.error as Error).message}</p>}
             </>
           )}

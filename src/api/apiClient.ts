@@ -90,10 +90,27 @@ async function downloadFile(path: string, fileName: string) {
   URL.revokeObjectURL(link.href)
 }
 
+/**
+ * Loads a picture that needs a login (e.g. a card preview) and returns a temporary
+ * address the browser can show in an <img>. Call URL.revokeObjectURL() when done.
+ */
+async function imageAddress(path: string): Promise<string> {
+  const token = getSavedToken()
+  const response = await fetch(API_URL + path, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  })
+  if (!response.ok) {
+    const answer = await response.json().catch(() => null)
+    throw new ApiError(response.status, answer?.message ?? 'Could not load the picture.')
+  }
+  return URL.createObjectURL(await response.blob())
+}
+
 export const api = {
   get: <T>(path: string) => request<T>('GET', path),
   post: <T>(path: string, body?: unknown) => request<T>('POST', path, body),
   put: <T>(path: string, body?: unknown) => request<T>('PUT', path, body),
   delete: <T>(path: string) => request<T>('DELETE', path),
   downloadFile,
+  imageAddress,
 }

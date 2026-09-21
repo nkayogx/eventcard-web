@@ -14,6 +14,7 @@ import { CustomDomainPage } from './pages/CustomDomainPage'
 import { EventFormPage } from './pages/events/EventFormPage'
 import { EventPage } from './pages/events/EventPage'
 import { EventsPage } from './pages/events/EventsPage'
+import { InvitationPage } from './pages/invitation/InvitationPage'
 import { LoginPage } from './pages/LoginPage'
 import { PlatformCompaniesPage } from './pages/PlatformCompaniesPage'
 import { SignupPage } from './pages/SignupPage'
@@ -37,6 +38,8 @@ function App() {
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/accept-invitation/:code" element={<AcceptInvitationPage />} />
+      {/* A guest's personal invitation (from the link or QR code on their card) */}
+      <Route path="/i/:code" element={<InvitationPage />} />
 
       {/* Pages that need a login */}
       <Route element={<RequireLogin><AppLayout /></RequireLogin>}>

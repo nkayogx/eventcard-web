@@ -3,8 +3,9 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { api } from '../../api/apiClient'
-import type { EventDetails, Guest, GuestPage } from '../../api/types'
+import { rsvpNames, type EventDetails, type Guest, type GuestPage, type RsvpStatus } from '../../api/types'
 import { Button, Card, ErrorBox } from '../../components/ui'
+import { CardPreviewDialog } from './CardPreviewDialog'
 import { countOf, isReadOnly, useCanEditEvents } from './eventHelpers'
 import { GuestPanel } from './GuestPanel'
 import { ImportGuests } from './ImportGuests'
@@ -17,20 +18,28 @@ export function GuestsTab({ event }: { event: EventDetails }) {
   const [search, setSearch] = useState('')
   const [cardTypeId, setCardTypeId] = useState('')
   const [group, setGroup] = useState('')
+  const [rsvp, setRsvp] = useState('')
   const [page, setPage] = useState(0)
   const [panel, setPanel] = useState<SidePanel>({ kind: 'none' })
+  const [cardToShow, setCardToShow] = useState<Guest | null>(null)
+  const [copiedGuestId, setCopiedGuestId] = useState<string | null>(null)
 
   const guests = useQuery({
-    queryKey: ['guests', event.id, search, cardTypeId, group, page],
+    queryKey: ['guests', event.id, search, cardTypeId, group, rsvp, page],
     queryFn: () =>
       api.get<GuestPage>(
         `/api/events/${event.id}/guests?search=${encodeURIComponent(search)}&cardTypeId=${cardTypeId}` +
-          `&group=${encodeURIComponent(group)}&page=${page}`,
+          `&group=${encodeURIComponent(group)}&rsvp=${rsvp}&page=${page}`,
       ),
   })
 
   function closePanel() {
     setPanel({ kind: 'none' })
+  }
+
+  async function copyLink(guest: Guest) {
+    await navigator.clipboard.writeText(guest.invitationLink)
+    setCopiedGuestId(guest.id)
   }
 
   // Changing a filter always goes back to the first page
@@ -59,6 +68,13 @@ export function GuestsTab({ event }: { event: EventDetails }) {
               <option key={cardType.id} value={cardType.id}>{cardType.name}</option>
             ))}
           </select>
+          <select aria-label="RSVP" value={rsvp} onChange={(e) => filterBy(setRsvp, e.target.value)}
+            className="rounded-lg border border-line bg-white px-3 py-2">
+            <option value="">All RSVP answers</option>
+            {(Object.keys(rsvpNames) as RsvpStatus[]).map((status) => (
+              <option key={status} value={status}>{rsvpNames[status]}</option>
+            ))}
+          </select>
           {(guests.data?.groupNames.length ?? 0) > 0 && (
             <select aria-label="Group" value={group} onChange={(e) => filterBy(setGroup, e.target.value)}
               className="rounded-lg border border-line bg-white px-3 py-2">
@@ -80,7 +96,7 @@ export function GuestsTab({ event }: { event: EventDetails }) {
           {guests.isLoading && <p className="p-6 text-ink-soft">Loading…</p>}
           {guests.data && guests.data.guests.length === 0 && (
             <p className="p-6 text-sm text-ink-soft">
-              {search || cardTypeId || group ? 'No guests match your search.' : 'No guests yet.'}
+              {search || cardTypeId || group || rsvp ? 'No guests match your search.' : 'No guests yet.'}
             </p>
           )}
           {guests.data && guests.data.guests.length > 0 && (
@@ -91,6 +107,8 @@ export function GuestsTab({ event }: { event: EventDetails }) {
                   <th className="px-4 py-3 font-medium">Phone</th>
                   <th className="px-4 py-3 font-medium">Card</th>
                   <th className="px-4 py-3 font-medium">Group</th>
+                  <th className="px-4 py-3 font-medium">RSVP</th>
+                  <th className="px-4 py-3 font-medium">Invitation</th>
                 </tr>
               </thead>
               <tbody>
@@ -106,6 +124,15 @@ export function GuestsTab({ event }: { event: EventDetails }) {
                     <td className="px-4 py-3 whitespace-nowrap">{guest.phone}</td>
                     <td className="px-4 py-3 whitespace-nowrap">{guest.cardTypeName} ({guest.seats})</td>
                     <td className="px-4 py-3 text-ink-soft">{guest.groupName ?? '—'}</td>
+                    <td className="px-4 py-3 whitespace-nowrap" title={guest.rsvpMessage ?? undefined}>
+                      <RsvpBadge guest={guest} />
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap" onClick={(clickEvent) => clickEvent.stopPropagation()}>
+                      <button onClick={() => setCardToShow(guest)} className="mr-3 text-brand hover:underline">View card</button>
+                      <button onClick={() => copyLink(guest)} className="text-brand hover:underline">
+                        {copiedGuestId === guest.id ? 'Copied ✓' : 'Copy link'}
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -126,6 +153,15 @@ export function GuestsTab({ event }: { event: EventDetails }) {
         )}
       </div>
 
+      {cardToShow && (
+        <CardPreviewDialog
+          title={`Card for ${cardToShow.nameOnCard}`}
+          imagePath={`/api/events/${event.id}/guests/${cardToShow.id}/card.png`}
+          downloadName={`card-${cardToShow.nameOnCard.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}.png`}
+          onClose={() => setCardToShow(null)}
+        />
+      )}
+
       <div>
         {panel.kind === 'add' && <GuestPanel event={event} onClose={closePanel} />}
         {panel.kind === 'edit' && (
@@ -133,5 +169,19 @@ export function GuestsTab({ event }: { event: EventDetails }) {
         )}
       </div>
     </div>
+  )
+}
+
+function RsvpBadge({ guest }: { guest: Guest }) {
+  const looks: Record<RsvpStatus, string> = {
+    ATTENDING: 'bg-success-soft text-success',
+    NOT_ATTENDING: 'bg-danger-soft text-danger',
+    NO_REPLY: 'bg-line text-ink-soft',
+  }
+  const peopleNote = guest.rsvpStatus === 'ATTENDING' && guest.rsvpPeople ? ` (${guest.rsvpPeople})` : ''
+  return (
+    <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${looks[guest.rsvpStatus]}`}>
+      {rsvpNames[guest.rsvpStatus]}{peopleNote}
+    </span>
   )
 }
