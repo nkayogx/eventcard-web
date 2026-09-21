@@ -27,7 +27,7 @@ export function SignupPage() {
     mutationFn: () => api.post<LoginResponse>('/api/auth/signup-company', form),
     onSuccess: (response) => {
       logIn(response)
-      navigate('/company')
+      navigate('/events')
     },
   })
 

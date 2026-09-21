@@ -73,9 +73,27 @@ async function request<T>(method: Method, path: string, body?: unknown): Promise
   return answer as T
 }
 
+/** Downloads a file (e.g. the guest list template) and asks the browser to save it. */
+async function downloadFile(path: string, fileName: string) {
+  const token = getSavedToken()
+  const response = await fetch(API_URL + path, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  })
+  if (!response.ok) {
+    throw new ApiError(response.status, 'Could not download the file. Please try again.')
+  }
+  const file = await response.blob()
+  const link = document.createElement('a')
+  link.href = URL.createObjectURL(file)
+  link.download = fileName
+  link.click()
+  URL.revokeObjectURL(link.href)
+}
+
 export const api = {
   get: <T>(path: string) => request<T>('GET', path),
   post: <T>(path: string, body?: unknown) => request<T>('POST', path, body),
   put: <T>(path: string, body?: unknown) => request<T>('PUT', path, body),
   delete: <T>(path: string) => request<T>('DELETE', path),
+  downloadFile,
 }

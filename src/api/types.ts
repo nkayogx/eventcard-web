@@ -93,3 +93,124 @@ export const roleNames: Record<UserRole, string> = {
   CHECK_IN_STAFF: 'Check-in staff',
   PLATFORM_ADMIN: 'Platform admin',
 }
+
+// ---------- Events & guests ----------
+
+export type EventType = 'WEDDING' | 'SEND_OFF' | 'KITCHEN_PARTY' | 'BIRTHDAY' | 'GRADUATION' | 'CONFERENCE' | 'OTHER'
+
+export type EventStatus = 'DRAFT' | 'ACTIVE' | 'FINISHED' | 'CANCELLED'
+
+export const eventTypeNames: Record<EventType, string> = {
+  WEDDING: 'Wedding',
+  SEND_OFF: 'Send-off',
+  KITCHEN_PARTY: 'Kitchen party',
+  BIRTHDAY: 'Birthday',
+  GRADUATION: 'Graduation',
+  CONFERENCE: 'Conference',
+  OTHER: 'Other',
+}
+
+export const eventStatusNames: Record<EventStatus, string> = {
+  DRAFT: 'Draft',
+  ACTIVE: 'Active',
+  FINISHED: 'Finished',
+  CANCELLED: 'Cancelled',
+}
+
+export interface EventSummary {
+  id: string
+  name: string
+  eventType: EventType
+  startsAt: string
+  venueName: string
+  status: EventStatus
+  totalCards: number
+  totalSeats: number
+}
+
+export interface EventPage {
+  events: EventSummary[]
+  page: number
+  totalPages: number
+  totalEvents: number
+}
+
+export interface CardTypeDetails {
+  id: string
+  name: string
+  seats: number
+  cards: number
+  seatsUsed: number
+}
+
+export interface GroupTotals {
+  groupName: string | null
+  cards: number
+  seats: number
+}
+
+export interface EventDetails {
+  id: string
+  name: string
+  eventType: EventType
+  hostNames: string | null
+  startsAt: string
+  endsAt: string | null
+  timeZone: string
+  venueName: string
+  venueAddress: string | null
+  mapLink: string | null
+  dressCode: string | null
+  extraInfo: string | null
+  contactPhone: string | null
+  rsvpDeadline: string | null
+  status: EventStatus
+  allowedNextStatuses: EventStatus[]
+  cardTypes: CardTypeDetails[]
+  groups: GroupTotals[]
+  totalCards: number
+  totalSeats: number
+}
+
+export interface Guest {
+  id: string
+  nameOnCard: string
+  phone: string
+  cardTypeId: string
+  cardTypeName: string
+  seats: number
+  groupName: string | null
+  notes: string | null
+}
+
+export interface GuestPage {
+  guests: Guest[]
+  page: number
+  totalPages: number
+  totalGuests: number
+  groupNames: string[]
+}
+
+export interface ImportProblem {
+  row: number
+  message: string
+}
+
+export interface ImportDuplicate {
+  row: number
+  nameOnCard: string
+  phone: string
+}
+
+export interface ImportPreview {
+  readyCount: number
+  readyExamples: { row: number; nameOnCard: string; phone: string; cardType: string; groupName: string | null }[]
+  problems: ImportProblem[]
+  duplicates: ImportDuplicate[]
+}
+
+export interface ImportResult {
+  importedCount: number
+  problems: ImportProblem[]
+  duplicates: ImportDuplicate[]
+}

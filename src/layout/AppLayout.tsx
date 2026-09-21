@@ -12,6 +12,7 @@ interface MenuItem {
 }
 
 const menu: MenuItem[] = [
+  { to: '/events', label: 'Events', roles: ['OWNER', 'MANAGER', 'CHECK_IN_STAFF'] },
   { to: '/company', label: 'Company profile', roles: ['OWNER', 'MANAGER', 'CHECK_IN_STAFF'] },
   { to: '/company/domain', label: 'Custom domain', roles: ['OWNER'] },
   { to: '/staff', label: 'Staff', roles: ['OWNER', 'MANAGER'] },
@@ -47,7 +48,7 @@ export function AppLayout() {
             <NavLink
               key={item.to}
               to={item.to}
-              end
+              end={item.to !== '/events'}
               className={({ isActive }) =>
                 `whitespace-nowrap rounded-lg px-3 py-2 text-sm ${
                   isActive ? 'bg-brand-soft font-medium text-brand' : 'text-ink-soft hover:bg-paper'

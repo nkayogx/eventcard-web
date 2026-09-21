@@ -11,6 +11,9 @@ import { AppLayout } from './layout/AppLayout'
 import { AcceptInvitationPage } from './pages/AcceptInvitationPage'
 import { CompanyProfilePage } from './pages/CompanyProfilePage'
 import { CustomDomainPage } from './pages/CustomDomainPage'
+import { EventFormPage } from './pages/events/EventFormPage'
+import { EventPage } from './pages/events/EventPage'
+import { EventsPage } from './pages/events/EventsPage'
 import { LoginPage } from './pages/LoginPage'
 import { PlatformCompaniesPage } from './pages/PlatformCompaniesPage'
 import { SignupPage } from './pages/SignupPage'
@@ -24,7 +27,7 @@ const queryClient = new QueryClient({
 function HomePage() {
   const { me } = useAuth()
   if (me?.role === 'PLATFORM_ADMIN') return <Navigate to="/platform/companies" replace />
-  return <Navigate to="/company" replace />
+  return <Navigate to="/events" replace />
 }
 
 function App() {
@@ -38,6 +41,12 @@ function App() {
       {/* Pages that need a login */}
       <Route element={<RequireLogin><AppLayout /></RequireLogin>}>
         <Route path="/" element={<HomePage />} />
+        <Route path="/events" element={<EventsPage />} />
+        <Route path="/events/new" element={
+          <RequireLogin roles={['OWNER', 'MANAGER']}><EventFormPage /></RequireLogin>} />
+        <Route path="/events/:eventId" element={<EventPage />} />
+        <Route path="/events/:eventId/edit" element={
+          <RequireLogin roles={['OWNER', 'MANAGER']}><EventFormPage /></RequireLogin>} />
         <Route path="/company" element={
           <RequireLogin roles={['OWNER', 'MANAGER', 'CHECK_IN_STAFF']}><CompanyProfilePage /></RequireLogin>} />
         <Route path="/company/domain" element={
