@@ -16,7 +16,10 @@ const menu: MenuItem[] = [
   { to: '/company', label: 'Company profile', roles: ['OWNER', 'MANAGER', 'CHECK_IN_STAFF'] },
   { to: '/company/domain', label: 'Custom domain', roles: ['OWNER'] },
   { to: '/staff', label: 'Staff', roles: ['OWNER', 'MANAGER'] },
+  { to: '/billing', label: 'Plan & credits', roles: ['OWNER', 'MANAGER'] },
   { to: '/platform/companies', label: 'All companies', roles: ['PLATFORM_ADMIN'] },
+  { to: '/platform/payments', label: 'Payments', roles: ['PLATFORM_ADMIN'] },
+  { to: '/platform/pricing', label: 'Plans & prices', roles: ['PLATFORM_ADMIN'] },
 ]
 
 export function AppLayout() {

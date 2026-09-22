@@ -4,7 +4,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { api } from '../api/apiClient'
-import type { CompanyDetails, CompanyPage } from '../api/types'
+import { type CompanyDetails, type CompanyPage, type CompanyRow as CompanyListRow } from '../api/types'
 import { Button, Card, ErrorBox, PageTitle, StatusBadge } from '../components/ui'
 
 export function PlatformCompaniesPage() {
@@ -43,12 +43,13 @@ export function PlatformCompaniesPage() {
                 <th className="px-6 py-3 font-medium">Joined</th>
                 <th className="px-6 py-3 font-medium">Account</th>
                 <th className="px-6 py-3 font-medium">Sending</th>
+                <th className="px-6 py-3 font-medium">Plan · Credits</th>
                 <th className="px-6 py-3" />
               </tr>
             </thead>
             <tbody>
-              {companies.data.companies.map((company) => (
-                <CompanyRow key={company.id} company={company} />
+              {companies.data.companies.map((row) => (
+                <CompanyRow key={row.company.id} row={row} />
               ))}
             </tbody>
           </table>
@@ -68,8 +69,10 @@ export function PlatformCompaniesPage() {
   )
 }
 
-function CompanyRow({ company }: { company: CompanyDetails }) {
+function CompanyRow({ row }: { row: CompanyListRow }) {
+  const company: CompanyDetails = row.company
   const queryClient = useQueryClient()
+  const [adjusting, setAdjusting] = useState(false)
 
   // action is one of: suspend, reactivate, allow-sending, block-sending
   const act = useMutation({
@@ -93,6 +96,17 @@ function CompanyRow({ company }: { company: CompanyDetails }) {
       <td className="px-6 py-3">
         <StatusBadge good={company.canSendMessages}>{company.canSendMessages ? 'Allowed' : 'Locked'}</StatusBadge>
       </td>
+      <td className="px-6 py-3 whitespace-nowrap">
+        <p>{row.planName}{row.planStatus === 'IN_GRACE' ? ' (grace)' : ''}</p>
+        {row.planPaidUntil && row.planStatus !== 'EXPIRED' && (
+          <p className="text-xs text-ink-soft">until {new Date(row.planPaidUntil).toLocaleDateString()}</p>
+        )}
+        <p className="text-xs">
+          {row.creditBalance.toLocaleString('en-US')} credits ·{' '}
+          <button onClick={() => setAdjusting(!adjusting)} className="text-brand hover:underline">Adjust</button>
+        </p>
+        {adjusting && <AdjustCredits companyId={company.id} onDone={() => setAdjusting(false)} />}
+      </td>
       <td className="px-6 py-3">
         <div className="flex justify-end gap-2">
           <Button look="secondary" busy={act.isPending}
@@ -106,5 +120,32 @@ function CompanyRow({ company }: { company: CompanyDetails }) {
         </div>
       </td>
     </tr>
+  )
+}
+
+/** Add (e.g. 100) or remove (e.g. -100) credits by hand, with a note for the company's statement. */
+function AdjustCredits({ companyId, onDone }: { companyId: string; onDone: () => void }) {
+  const queryClient = useQueryClient()
+  const [amount, setAmount] = useState('')
+  const [note, setNote] = useState('')
+  const adjust = useMutation({
+    mutationFn: () => api.post(`/api/platform/companies/${companyId}/credits`, { amount: Number(amount), note }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['platform-companies'] })
+      onDone()
+    },
+  })
+  return (
+    <div className="mt-2 space-y-1">
+      <div className="flex gap-1">
+        <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="+100 / -100"
+          aria-label="Credits to add or remove" className="w-24 rounded border border-line px-2 py-1 text-xs" />
+        <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Note"
+          aria-label="Note" className="w-28 rounded border border-line px-2 py-1 text-xs" />
+        <button disabled={!amount || !note || adjust.isPending} onClick={() => adjust.mutate()}
+          className="rounded bg-brand px-2 text-xs text-white disabled:opacity-50">Save</button>
+      </div>
+      {adjust.error && <p className="text-xs text-danger">{(adjust.error as Error).message}</p>}
+    </div>
   )
 }

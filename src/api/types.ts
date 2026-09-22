@@ -80,8 +80,17 @@ export interface InvitationDetails {
   role: UserRole
 }
 
+/** A company in the platform admin's list, with its plan and credits. */
+export interface CompanyRow {
+  company: CompanyDetails
+  planName: string
+  planStatus: 'FREE' | 'ACTIVE' | 'IN_GRACE' | 'EXPIRED'
+  planPaidUntil: string | null
+  creditBalance: number
+}
+
 export interface CompanyPage {
-  companies: CompanyDetails[]
+  companies: CompanyRow[]
   page: number
   totalPages: number
   totalCompanies: number
@@ -229,6 +238,7 @@ export interface ImportPreview {
   readyExamples: { row: number; nameOnCard: string; phone: string; cardType: string; groupName: string | null }[]
   problems: ImportProblem[]
   duplicates: ImportDuplicate[]
+  remainingGuestsOnPlan: number | null
 }
 
 export interface ImportResult {
@@ -325,4 +335,121 @@ export interface InvitationPage {
     contactPhone: string | null
   }
   company: { name: string; logoUrl: string | null; primaryColor: string | null; secondaryColor: string | null }
+}
+
+// ---------- Plans, credits & payments ----------
+
+export type PlanStatus = 'FREE' | 'ACTIVE' | 'IN_GRACE' | 'EXPIRED'
+export type PaymentType = 'PLAN' | 'CREDITS'
+export type PaymentStatus = 'WAITING_FOR_PAYMENT' | 'PAID' | 'REJECTED' | 'CANCELLED'
+export type MessageChannel = 'SMS' | 'WHATSAPP'
+export type CreditReason = 'PURCHASE' | 'MESSAGE_SENT' | 'MESSAGE_REFUND' | 'ADMIN_ADJUSTMENT'
+
+/** A plan and its limits. null limits mean unlimited. */
+export interface Plan {
+  id: string
+  code: string
+  name: string
+  monthlyPriceTzs: number
+  maxActiveEvents: number | null
+  maxGuestsPerEvent: number | null
+  maxStaff: number | null
+  allowsCustomDomain: boolean
+  allowsOwnArtwork: boolean
+  freePlan: boolean
+  available: boolean
+  sortOrder: number
+}
+
+export interface CreditPack {
+  id: string
+  name: string
+  credits: number
+  priceTzs: number
+  available: boolean
+  sortOrder: number
+}
+
+export interface MessagePrice {
+  channel: MessageChannel
+  credits: number
+}
+
+export interface PaymentInstructions {
+  title: string
+  steps: string[]
+  amountTzs: number
+  reference: string
+}
+
+export interface Payment {
+  id: string
+  reference: string
+  type: PaymentType
+  description: string
+  amountTzs: number
+  status: PaymentStatus
+  payerPhone: string | null
+  transactionReference: string | null
+  submittedAt: string | null
+  confirmedAt: string | null
+  adminNote: string | null
+  createdAt: string
+  instructions: PaymentInstructions | null
+  companyId: string | null
+  companyName: string | null
+}
+
+export interface BillingOverview {
+  plan: Plan
+  planStatus: PlanStatus
+  paidUntil: string | null
+  graceEndsOn: string | null
+  chosenPlanName: string | null
+  usage: {
+    activeEvents: number
+    maxActiveEvents: number | null
+    staff: number
+    maxStaff: number | null
+    maxGuestsPerEvent: number | null
+  }
+  creditBalance: number
+  plansForSale: Plan[]
+  packsForSale: CreditPack[]
+  messagePrices: MessagePrice[]
+  waitingPayments: Payment[]
+}
+
+export interface CreditMovement {
+  id: string
+  amount: number
+  reason: CreditReason
+  balanceAfter: number
+  note: string | null
+  createdAt: string
+}
+
+export interface CreditStatement {
+  movements: CreditMovement[]
+  page: number
+  totalPages: number
+}
+
+export const creditReasonNames: Record<CreditReason, string> = {
+  PURCHASE: 'Bought',
+  MESSAGE_SENT: 'Message sent',
+  MESSAGE_REFUND: 'Refund (message failed)',
+  ADMIN_ADJUSTMENT: 'Adjusted by EventCard',
+}
+
+export const paymentStatusNames: Record<PaymentStatus, string> = {
+  WAITING_FOR_PAYMENT: 'Waiting',
+  PAID: 'Paid',
+  REJECTED: 'Rejected',
+  CANCELLED: 'Cancelled',
+}
+
+/** "TSh 80,000" */
+export function formatTzs(amount: number): string {
+  return 'TSh ' + amount.toLocaleString('en-US')
 }

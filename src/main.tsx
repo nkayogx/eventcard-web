@@ -9,6 +9,7 @@ import { RequireLogin } from './auth/RequireLogin'
 import './index.css'
 import { AppLayout } from './layout/AppLayout'
 import { AcceptInvitationPage } from './pages/AcceptInvitationPage'
+import { BillingPage } from './pages/billing/BillingPage'
 import { CompanyProfilePage } from './pages/CompanyProfilePage'
 import { CustomDomainPage } from './pages/CustomDomainPage'
 import { EventFormPage } from './pages/events/EventFormPage'
@@ -17,6 +18,8 @@ import { EventsPage } from './pages/events/EventsPage'
 import { InvitationPage } from './pages/invitation/InvitationPage'
 import { LoginPage } from './pages/LoginPage'
 import { PlatformCompaniesPage } from './pages/PlatformCompaniesPage'
+import { PlatformPaymentsPage } from './pages/platform/PlatformPaymentsPage'
+import { PlatformPricingPage } from './pages/platform/PlatformPricingPage'
 import { SignupPage } from './pages/SignupPage'
 import { StaffPage } from './pages/StaffPage'
 
@@ -56,6 +59,12 @@ function App() {
           <RequireLogin roles={['OWNER']}><CustomDomainPage /></RequireLogin>} />
         <Route path="/staff" element={
           <RequireLogin roles={['OWNER', 'MANAGER']}><StaffPage /></RequireLogin>} />
+        <Route path="/billing" element={
+          <RequireLogin roles={['OWNER', 'MANAGER']}><BillingPage /></RequireLogin>} />
+        <Route path="/platform/payments" element={
+          <RequireLogin roles={['PLATFORM_ADMIN']}><PlatformPaymentsPage /></RequireLogin>} />
+        <Route path="/platform/pricing" element={
+          <RequireLogin roles={['PLATFORM_ADMIN']}><PlatformPricingPage /></RequireLogin>} />
         <Route path="/platform/companies" element={
           <RequireLogin roles={['PLATFORM_ADMIN']}><PlatformCompaniesPage /></RequireLogin>} />
       </Route>

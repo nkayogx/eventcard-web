@@ -1,6 +1,7 @@
 // Small building blocks used on every screen, so all pages look the same.
 
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from 'react'
+import { Link } from 'react-router-dom'
 import { ApiError } from '../api/apiClient'
 
 export function PageTitle({ title, subtitle }: { title: string; subtitle?: string }) {
@@ -99,12 +100,23 @@ export function SelectField({ label, name, options, error, ...rest }: SelectFiel
   )
 }
 
-/** Shows an error that is not about one specific field (e.g. "Wrong email or password"). */
+/**
+ * Shows an error that is not about one specific field (e.g. "Wrong email or password").
+ * Plan-limit errors (field "plan") also get a link to the "Plan & credits" page.
+ */
 export function ErrorBox({ error }: { error: unknown }) {
   if (!error) return null
-  if (error instanceof ApiError && error.field) return null // already shown under the field
+  const isPlanLimit = error instanceof ApiError && error.field === 'plan'
+  if (error instanceof ApiError && error.field && !isPlanLimit) return null // already shown under the field
   const message = error instanceof Error ? error.message : 'Something went wrong.'
-  return <p className="rounded-lg bg-danger-soft px-4 py-3 text-sm text-danger">{message}</p>
+  return (
+    <p className="rounded-lg bg-danger-soft px-4 py-3 text-sm text-danger">
+      {message}
+      {isPlanLimit && (
+        <> <Link to="/billing" className="font-medium underline">See plans</Link></>
+      )}
+    </p>
+  )
 }
 
 export function SuccessBox({ children }: { children: ReactNode }) {

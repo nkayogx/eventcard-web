@@ -8,6 +8,7 @@ import { useState, type ChangeEvent } from 'react'
 import { api } from '../../api/apiClient'
 import type { EventDetails, ImportDuplicate, ImportPreview, ImportProblem, ImportResult } from '../../api/types'
 import { Button, Card, ErrorBox, SuccessBox } from '../../components/ui'
+import { Link } from 'react-router-dom'
 import { countOf } from './eventHelpers'
 
 function asUpload(file: File): FormData {
@@ -133,6 +134,13 @@ export function ImportGuests({ event, onClose }: { event: EventDetails; onClose:
               )}
 
               <RowProblems problems={preview.problems} duplicates={preview.duplicates} />
+
+              {preview.remainingGuestsOnPlan !== null && preview.readyCount > preview.remainingGuestsOnPlan && (
+                <p className="rounded-lg bg-warning-soft px-4 py-3 text-sm">
+                  Your plan allows {countOf(preview.remainingGuestsOnPlan, 'more guest')} for this event, but this file
+                  has {preview.readyCount}. Remove some rows, or <Link to="/billing" className="underline">upgrade your plan</Link>.
+                </p>
+              )}
 
               {preview.problems.length > 0 && preview.readyCount > 0 && (
                 <p className="text-sm text-ink-soft">
