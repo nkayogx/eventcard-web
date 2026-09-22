@@ -215,6 +215,8 @@ export interface Guest {
   rsvpMessage: string | null
   /** Status of the guest's latest card message; null = not sent yet */
   cardStatus: MessageStatus | null
+  peopleArrived: number
+  lastArrivedAt: string | null
 }
 
 export interface GuestPage {
@@ -545,4 +547,49 @@ export function smsParts(text: string): number {
   const single = plainLetters ? 160 : 70
   const perPart = plainLetters ? 153 : 67
   return text.length <= single ? 1 : Math.ceil(text.length / perPart)
+}
+
+// ---------- Check-in at the door ----------
+
+export type LookUpStatus = 'READY' | 'PARTLY_ARRIVED' | 'ALL_ARRIVED' | 'NOT_FOR_THIS_EVENT'
+export type CheckInMethod = 'QR_SCAN' | 'MANUAL_SEARCH'
+
+export interface ArrivalGuest {
+  id: string
+  nameOnCard: string
+  cardTypeName: string
+  seats: number
+  peopleArrived: number
+  seatsLeft: number
+  lastArrivedAt: string | null
+  rsvpStatus: RsvpStatus
+  rsvpPeople: number | null
+  groupName: string | null
+  notes: string | null
+}
+
+export interface LookUpResult {
+  status: LookUpStatus
+  guest: ArrivalGuest | null
+}
+
+export interface CheckInDetails {
+  id: string
+  guestId: string
+  guestName: string | null
+  people: number
+  method: CheckInMethod
+  checkedInBy: string | null
+  createdAt: string
+  undone: boolean
+}
+
+export interface ArrivalSummary {
+  peopleArrived: number
+  totalSeats: number
+  cardsArrived: number
+  totalCards: number
+  expectedFromRsvp: number
+  byCardType: { cardTypeName: string; cards: number; cardsArrived: number; peopleArrived: number; seats: number }[]
+  recentCheckIns: CheckInDetails[]
 }

@@ -16,6 +16,7 @@ import { EventFormPage } from './pages/events/EventFormPage'
 import { EventPage } from './pages/events/EventPage'
 import { EventsPage } from './pages/events/EventsPage'
 import { InvitationPage } from './pages/invitation/InvitationPage'
+import { CheckInPage } from './pages/checkin/CheckInPage'
 import { LoginPage } from './pages/LoginPage'
 import { PlatformCompaniesPage } from './pages/PlatformCompaniesPage'
 import { PlatformPaymentsPage } from './pages/platform/PlatformPaymentsPage'
@@ -51,6 +52,7 @@ function App() {
         <Route path="/events/new" element={
           <RequireLogin roles={['OWNER', 'MANAGER']}><EventFormPage /></RequireLogin>} />
         <Route path="/events/:eventId" element={<EventPage />} />
+        <Route path="/events/:eventId/check-in" element={<CheckInPage />} />
         <Route path="/events/:eventId/edit" element={
           <RequireLogin roles={['OWNER', 'MANAGER']}><EventFormPage /></RequireLogin>} />
         <Route path="/company" element={

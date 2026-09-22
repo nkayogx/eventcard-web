@@ -1,9 +1,9 @@
 // Overview tab: the event's details, status buttons, and totals.
 
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
 import { api } from '../../api/apiClient'
-import type { EventDetails, EventStatus } from '../../api/types'
+import type { ArrivalSummary, EventDetails, EventStatus } from '../../api/types'
 import { useAuth } from '../../auth/AuthContext'
 import { Button, Card, ErrorBox } from '../../components/ui'
 import { countOf, formatEventDate, isReadOnly, useCanEditEvents } from './eventHelpers'
@@ -128,6 +128,8 @@ export function OverviewTab({ event }: { event: EventDetails }) {
           </ul>
         </Card>
 
+        {event.status !== 'DRAFT' && <ArrivalsCard eventId={event.id} />}
+
         <Card>
           <h2 className="font-semibold">RSVP answers</h2>
           <ul className="mt-3 space-y-1 text-sm">
@@ -163,5 +165,34 @@ export function OverviewTab({ event }: { event: EventDetails }) {
         )}
       </div>
     </div>
+  )
+}
+
+/** Who has come in at the door so far - refreshed every 10 seconds during the event. */
+function ArrivalsCard({ eventId }: { eventId: string }) {
+  const arrivals = useQuery({
+    queryKey: ['arrivals', eventId],
+    queryFn: () => api.get<ArrivalSummary>(`/api/events/${eventId}/check-in/summary`),
+    refetchInterval: 10_000,
+  })
+  const numbers = arrivals.data
+  if (!numbers) return null
+  return (
+    <Card>
+      <h2 className="font-semibold">Arrivals</h2>
+      <p className="mt-2 text-3xl font-semibold">{numbers.peopleArrived}</p>
+      <p className="text-sm text-ink-soft">
+        of {countOf(numbers.totalSeats, 'seat')} · {countOf(numbers.cardsArrived, 'card')} of {numbers.totalCards}
+        {numbers.expectedFromRsvp > 0 && <> · {numbers.expectedFromRsvp} said they would come</>}
+      </p>
+      <ul className="mt-3 space-y-1 text-sm">
+        {numbers.byCardType.map((row) => (
+          <li key={row.cardTypeName} className="flex justify-between">
+            <span>{row.cardTypeName}</span>
+            <span className="text-ink-soft">{row.peopleArrived} of {row.seats}</span>
+          </li>
+        ))}
+      </ul>
+    </Card>
   )
 }

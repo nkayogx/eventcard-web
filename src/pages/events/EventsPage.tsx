@@ -77,7 +77,7 @@ export function EventsPage() {
         {events.data?.events.map((event) => (
           <Link
             key={event.id}
-            to={`/events/${event.id}`}
+            to={!canEdit && event.status === 'ACTIVE' ? `/events/${event.id}/check-in` : `/events/${event.id}`}
             className="rounded-xl border border-line bg-white p-5 transition hover:border-brand/40 hover:shadow-sm"
           >
             <div className="flex items-start justify-between gap-3">

@@ -153,6 +153,7 @@ export function GuestsTab({ event }: { event: EventDetails }) {
                   <th className="px-4 py-3 font-medium">Group</th>
                   <th className="px-4 py-3 font-medium">Card sent</th>
                   <th className="px-4 py-3 font-medium">RSVP</th>
+                  <th className="px-4 py-3 font-medium">Arrived</th>
                   <th className="px-4 py-3 font-medium">Invitation</th>
                 </tr>
               </thead>
@@ -178,6 +179,11 @@ export function GuestsTab({ event }: { event: EventDetails }) {
                     <td className="px-4 py-3 whitespace-nowrap"><CardStatus status={guest.cardStatus} /></td>
                     <td className="px-4 py-3 whitespace-nowrap" title={guest.rsvpMessage ?? undefined}>
                       <RsvpBadge guest={guest} />
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-ink-soft">
+                      {guest.peopleArrived > 0
+                        ? `${guest.peopleArrived}/${guest.seats} at ${new Date(guest.lastArrivedAt ?? '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                        : '—'}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap" onClick={(clickEvent) => clickEvent.stopPropagation()}>
                       <button onClick={() => setCardToShow(guest)} className="mr-3 text-brand hover:underline">View card</button>

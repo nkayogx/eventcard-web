@@ -38,6 +38,12 @@ export function EventPage() {
         <p className="mt-1 text-ink-soft">
           {eventTypeNames[details.eventType]} · {formatEventDate(details.startsAt)} · {details.venueName}
         </p>
+        {details.status === 'ACTIVE' && (
+          <Link to={`/events/${details.id}/check-in`}
+            className="mt-3 inline-flex rounded-lg bg-success px-4 py-2 text-sm font-medium text-white hover:opacity-90">
+            Open check-in (door)
+          </Link>
+        )}
       </div>
 
       <nav className="mb-6 flex gap-1 overflow-x-auto border-b border-line">
