@@ -9,12 +9,16 @@ import { CardPreviewDialog } from './CardPreviewDialog'
 import { countOf, isReadOnly, useCanEditEvents } from './eventHelpers'
 import { GuestPanel } from './GuestPanel'
 import { ImportGuests } from './ImportGuests'
+import { SendToSelectedDialog } from './SendToSelectedDialog'
 
 /** What is open on the right: nothing, the "add guest" form, one guest's form, or the upload. */
 type SidePanel = { kind: 'none' } | { kind: 'add' } | { kind: 'edit'; guest: Guest } | { kind: 'import' }
 
 export function GuestsTab({ event }: { event: EventDetails }) {
-  const canChange = useCanEditEvents() && !isReadOnly(event.status)
+  const canEditEvents = useCanEditEvents()
+  const canChange = canEditEvents && !isReadOnly(event.status)
+  // Owners and managers can tick guests and send them their cards
+  const canSelect = canEditEvents && event.status === 'ACTIVE'
   const [search, setSearch] = useState('')
   const [cardTypeId, setCardTypeId] = useState('')
   const [group, setGroup] = useState('')
@@ -23,6 +27,10 @@ export function GuestsTab({ event }: { event: EventDetails }) {
   const [panel, setPanel] = useState<SidePanel>({ kind: 'none' })
   const [cardToShow, setCardToShow] = useState<Guest | null>(null)
   const [copiedGuestId, setCopiedGuestId] = useState<string | null>(null)
+  // Ticked guests are remembered while you move between pages and filters
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [sendingToSelected, setSendingToSelected] = useState(false)
+  const [sentMessage, setSentMessage] = useState<string | null>(null)
 
   const guests = useQuery({
     queryKey: ['guests', event.id, search, cardTypeId, group, rsvp, page],
@@ -40,6 +48,26 @@ export function GuestsTab({ event }: { event: EventDetails }) {
   async function copyLink(guest: Guest) {
     await navigator.clipboard.writeText(guest.invitationLink)
     setCopiedGuestId(guest.id)
+  }
+
+  function toggleGuest(guestId: string) {
+    const updated = new Set(selectedIds)
+    if (updated.has(guestId)) {
+      updated.delete(guestId)
+    } else {
+      updated.add(guestId)
+    }
+    setSelectedIds(updated)
+    setSentMessage(null)
+  }
+
+  /** The box in the heading ticks (or unticks) every guest on this page. */
+  function toggleWholePage(pageGuests: Guest[]) {
+    const everyoneTicked = pageGuests.every((guest) => selectedIds.has(guest.id))
+    const updated = new Set(selectedIds)
+    pageGuests.forEach((guest) => (everyoneTicked ? updated.delete(guest.id) : updated.add(guest.id)))
+    setSelectedIds(updated)
+    setSentMessage(null)
   }
 
   // Changing a filter always goes back to the first page
@@ -91,6 +119,15 @@ export function GuestsTab({ event }: { event: EventDetails }) {
           </div>
         )}
 
+        {canSelect && selectedIds.size > 0 && (
+          <div className="flex flex-wrap items-center gap-3 rounded-lg bg-brand-soft px-4 py-3 text-sm">
+            <strong>{countOf(selectedIds.size, 'guest')} selected</strong>
+            <Button onClick={() => setSendingToSelected(true)}>Send cards to selected</Button>
+            <button onClick={() => setSelectedIds(new Set())} className="text-brand hover:underline">Clear selection</button>
+          </div>
+        )}
+        {sentMessage && <p className="rounded-lg bg-success-soft px-4 py-3 text-sm text-success">{sentMessage}</p>}
+
         <ErrorBox error={guests.error} />
         <Card className="overflow-x-auto p-0">
           {guests.isLoading && <p className="p-6 text-ink-soft">Loading…</p>}
@@ -103,11 +140,18 @@ export function GuestsTab({ event }: { event: EventDetails }) {
             <table className="w-full text-left text-sm">
               <thead className="border-b border-line text-ink-soft">
                 <tr>
+                  {canSelect && (
+                    <th className="w-10 px-4 py-3">
+                      <input type="checkbox" aria-label="Select all guests on this page"
+                        checked={guests.data.guests.every((guest) => selectedIds.has(guest.id))}
+                        onChange={() => toggleWholePage(guests.data.guests)} />
+                    </th>
+                  )}
                   <th className="px-4 py-3 font-medium">Name on card</th>
                   <th className="px-4 py-3 font-medium">Phone</th>
-                  <th className="px-4 py-3 font-medium">Card</th>
+                  <th className="px-4 py-3 font-medium">Card type</th>
                   <th className="px-4 py-3 font-medium">Group</th>
-                  <th className="px-4 py-3 font-medium">Card</th>
+                  <th className="px-4 py-3 font-medium">Card sent</th>
                   <th className="px-4 py-3 font-medium">RSVP</th>
                   <th className="px-4 py-3 font-medium">Invitation</th>
                 </tr>
@@ -121,6 +165,12 @@ export function GuestsTab({ event }: { event: EventDetails }) {
                       panel.kind === 'edit' && panel.guest.id === guest.id ? 'bg-brand-soft' : ''
                     }`}
                   >
+                    {canSelect && (
+                      <td className="px-4 py-3" onClick={(clickEvent) => clickEvent.stopPropagation()}>
+                        <input type="checkbox" aria-label={`Select ${guest.nameOnCard}`}
+                          checked={selectedIds.has(guest.id)} onChange={() => toggleGuest(guest.id)} />
+                      </td>
+                    )}
                     <td className="px-4 py-3 font-medium">{guest.nameOnCard}</td>
                     <td className="px-4 py-3 whitespace-nowrap">{guest.phone}</td>
                     <td className="px-4 py-3 whitespace-nowrap">{guest.cardTypeName} ({guest.seats})</td>
@@ -154,6 +204,19 @@ export function GuestsTab({ event }: { event: EventDetails }) {
           </div>
         )}
       </div>
+
+      {sendingToSelected && (
+        <SendToSelectedDialog
+          event={event}
+          guestIds={[...selectedIds]}
+          onClose={() => setSendingToSelected(false)}
+          onSent={() => {
+            setSentMessage(`Cards for ${countOf(selectedIds.size, 'guest')} are being sent. Follow the progress in the "Send cards" tab.`)
+            setSelectedIds(new Set())
+            setSendingToSelected(false)
+          }}
+        />
+      )}
 
       {cardToShow && (
         <CardPreviewDialog
