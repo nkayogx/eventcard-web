@@ -2,7 +2,9 @@
 // It adds the login token to every request and turns error answers
 // into an ApiError that screens can show to the user.
 
-export const API_URL: string = import.meta.env.VITE_API_URL ?? 'http://localhost:8181'
+// Empty = the same address as the website (while developing, the website passes /api on to the backend).
+// Set VITE_API_URL only if the API lives on a different address.
+export const API_URL: string = import.meta.env.VITE_API_URL ?? ''
 
 const TOKEN_KEY = 'eventcard.token'
 
