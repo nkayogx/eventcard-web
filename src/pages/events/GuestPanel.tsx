@@ -1,9 +1,9 @@
 // The side form for adding a new guest, or editing / removing an existing one.
 
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
 import { api } from '../../api/apiClient'
-import type { EventDetails, Guest } from '../../api/types'
+import { messageStatusNames, sendChannelNames, type EventDetails, type Guest, type MessageDetails, type SendChannel } from '../../api/types'
 import { Button, Card, ErrorBox, SelectField, TextField } from '../../components/ui'
 
 interface Props {
@@ -94,6 +94,7 @@ export function GuestPanel({ event, guest, onClose }: Props) {
           value={form.notes} onChange={(e) => update('notes', e.target.value)} error={save.error} />
 
         <ErrorBox error={save.error ?? remove.error} />
+        {isEditing && guest && <SendToGuest event={event} guest={guest} />}
         {save.isSuccess && !isEditing && <p className="text-sm text-success">Guest added. Add the next one.</p>}
         <div className="flex flex-wrap gap-2">
           <Button type="submit" busy={save.isPending}>{isEditing ? 'Save' : 'Add guest'}</Button>
@@ -103,5 +104,55 @@ export function GuestPanel({ event, guest, onClose }: Props) {
         </div>
       </form>
     </Card>
+  )
+}
+
+/** Send or resend this guest's card, and see the messages sent to them so far. */
+function SendToGuest({ event, guest }: { event: EventDetails; guest: Guest }) {
+  const queryClient = useQueryClient()
+  const [channel, setChannel] = useState<SendChannel>('WHATSAPP_THEN_SMS')
+  const history = useQuery({
+    queryKey: ['guest-messages', guest.id],
+    queryFn: () => api.get<MessageDetails[]>(`/api/events/${event.id}/guests/${guest.id}/messages`),
+  })
+  const send = useMutation({
+    mutationFn: () => api.post<MessageDetails>(`/api/events/${event.id}/guests/${guest.id}/send`, { channel }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['guest-messages', guest.id] })
+      queryClient.invalidateQueries({ queryKey: ['guests', event.id] })
+      queryClient.invalidateQueries({ queryKey: ['sending', event.id] })
+    },
+  })
+
+  if (event.status !== 'ACTIVE') {
+    return <p className="border-t border-line pt-3 text-xs text-ink-soft">Activate the event to send this guest's card.</p>
+  }
+
+  return (
+    <div className="space-y-2 border-t border-line pt-4">
+      <p className="text-sm font-medium">{guest.cardStatus ? 'Resend card' : 'Send card'}</p>
+      <div className="flex gap-2">
+        <select aria-label="Send by" value={channel} onChange={(e) => setChannel(e.target.value as SendChannel)}
+          className="min-w-0 flex-1 rounded-lg border border-line bg-white px-2 py-1.5 text-sm">
+          {(Object.keys(sendChannelNames) as SendChannel[]).map((option) => (
+            <option key={option} value={option}>{sendChannelNames[option]}</option>
+          ))}
+        </select>
+        <Button type="button" look="secondary" busy={send.isPending} onClick={() => send.mutate()}>Send</Button>
+      </div>
+      <ErrorBox error={send.error} />
+      {history.data && history.data.length > 0 && (
+        <ul className="space-y-1 text-xs">
+          {history.data.map((message) => (
+            <li key={message.id} className="flex justify-between gap-2">
+              <span>{new Date(message.queuedAt).toLocaleString()} · {message.channel === 'WHATSAPP' ? 'WhatsApp' : 'SMS'}</span>
+              <span className={message.status === 'FAILED' ? 'text-danger' : 'text-ink-soft'} title={message.failureReason ?? undefined}>
+                {messageStatusNames[message.status]}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   )
 }

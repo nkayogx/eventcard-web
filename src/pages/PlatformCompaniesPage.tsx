@@ -106,6 +106,7 @@ function CompanyRow({ row }: { row: CompanyListRow }) {
           <button onClick={() => setAdjusting(!adjusting)} className="text-brand hover:underline">Adjust</button>
         </p>
         {adjusting && <AdjustCredits companyId={company.id} onDone={() => setAdjusting(false)} />}
+        <SmsSender companyId={company.id} current={row.smsSenderName} />
       </td>
       <td className="px-6 py-3">
         <div className="flex justify-end gap-2">
@@ -146,6 +147,40 @@ function AdjustCredits({ companyId, onDone }: { companyId: string; onDone: () =>
           className="rounded bg-brand px-2 text-xs text-white disabled:opacity-50">Save</button>
       </div>
       {adjust.error && <p className="text-xs text-danger">{(adjust.error as Error).message}</p>}
+    </div>
+  )
+}
+
+/** The company's own SMS sender name - set it only once it is registered with the SMS company. */
+function SmsSender({ companyId, current }: { companyId: string; current: string | null }) {
+  const queryClient = useQueryClient()
+  const [editing, setEditing] = useState(false)
+  const [name, setName] = useState(current ?? '')
+  const save = useMutation({
+    mutationFn: () => api.put(`/api/platform/companies/${companyId}/sms-sender`, { smsSenderName: name }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['platform-companies'] })
+      setEditing(false)
+    },
+  })
+  if (!editing) {
+    return (
+      <p className="text-xs">
+        SMS sender: {current ?? <span className="text-ink-soft">platform</span>} ·{' '}
+        <button onClick={() => setEditing(true)} className="text-brand hover:underline">Change</button>
+      </p>
+    )
+  }
+  return (
+    <div className="mt-1 space-y-1">
+      <div className="flex gap-1">
+        <input value={name} onChange={(e) => setName(e.target.value.toUpperCase())} maxLength={11} placeholder="KAYOEVENTS"
+          aria-label="SMS sender name" className="w-28 rounded border border-line px-2 py-1 text-xs" />
+        <button disabled={save.isPending} onClick={() => save.mutate()}
+          className="rounded bg-brand px-2 text-xs text-white disabled:opacity-50">Save</button>
+      </div>
+      <p className="text-[11px] text-ink-soft">Empty = platform sender</p>
+      {save.error && <p className="text-xs text-danger">{(save.error as Error).message}</p>}
     </div>
   )
 }

@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { api } from '../../api/apiClient'
-import { rsvpNames, type EventDetails, type Guest, type GuestPage, type RsvpStatus } from '../../api/types'
+import { messageStatusNames, rsvpNames, type EventDetails, type Guest, type GuestPage, type MessageStatus, type RsvpStatus } from '../../api/types'
 import { Button, Card, ErrorBox } from '../../components/ui'
 import { CardPreviewDialog } from './CardPreviewDialog'
 import { countOf, isReadOnly, useCanEditEvents } from './eventHelpers'
@@ -107,6 +107,7 @@ export function GuestsTab({ event }: { event: EventDetails }) {
                   <th className="px-4 py-3 font-medium">Phone</th>
                   <th className="px-4 py-3 font-medium">Card</th>
                   <th className="px-4 py-3 font-medium">Group</th>
+                  <th className="px-4 py-3 font-medium">Card</th>
                   <th className="px-4 py-3 font-medium">RSVP</th>
                   <th className="px-4 py-3 font-medium">Invitation</th>
                 </tr>
@@ -124,6 +125,7 @@ export function GuestsTab({ event }: { event: EventDetails }) {
                     <td className="px-4 py-3 whitespace-nowrap">{guest.phone}</td>
                     <td className="px-4 py-3 whitespace-nowrap">{guest.cardTypeName} ({guest.seats})</td>
                     <td className="px-4 py-3 text-ink-soft">{guest.groupName ?? '—'}</td>
+                    <td className="px-4 py-3 whitespace-nowrap"><CardStatus status={guest.cardStatus} /></td>
                     <td className="px-4 py-3 whitespace-nowrap" title={guest.rsvpMessage ?? undefined}>
                       <RsvpBadge guest={guest} />
                     </td>
@@ -184,4 +186,14 @@ function RsvpBadge({ guest }: { guest: Guest }) {
       {rsvpNames[guest.rsvpStatus]}{peopleNote}
     </span>
   )
+}
+
+/** 🕓 waiting · ✓ sent · ✓✓ delivered · 👁 read · ⚠ failed - or "Not sent". */
+function CardStatus({ status }: { status: MessageStatus | null }) {
+  if (!status) return <span className="text-ink-soft">Not sent</span>
+  const symbols: Record<MessageStatus, string> = {
+    QUEUED: '🕓', SENDING: '🕓', SENT: '✓', DELIVERED: '✓✓', READ: '👁', FAILED: '⚠',
+  }
+  const look = status === 'FAILED' ? 'text-danger' : status === 'DELIVERED' || status === 'READ' ? 'text-success' : ''
+  return <span className={look} title={messageStatusNames[status]}>{symbols[status]} {messageStatusNames[status]}</span>
 }

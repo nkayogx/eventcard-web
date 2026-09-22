@@ -87,6 +87,7 @@ export interface CompanyRow {
   planStatus: 'FREE' | 'ACTIVE' | 'IN_GRACE' | 'EXPIRED'
   planPaidUntil: string | null
   creditBalance: number
+  smsSenderName: string | null
 }
 
 export interface CompanyPage {
@@ -212,6 +213,8 @@ export interface Guest {
   rsvpStatus: RsvpStatus
   rsvpPeople: number | null
   rsvpMessage: string | null
+  /** Status of the guest's latest card message; null = not sent yet */
+  cardStatus: MessageStatus | null
 }
 
 export interface GuestPage {
@@ -452,4 +455,94 @@ export const paymentStatusNames: Record<PaymentStatus, string> = {
 /** "TSh 80,000" */
 export function formatTzs(amount: number): string {
   return 'TSh ' + amount.toLocaleString('en-US')
+}
+
+// ---------- Sending cards ----------
+
+export type MessageStatus = 'QUEUED' | 'SENDING' | 'SENT' | 'DELIVERED' | 'READ' | 'FAILED'
+export type SendChannel = 'WHATSAPP' | 'SMS' | 'WHATSAPP_THEN_SMS'
+export type MessageLanguage = 'SW' | 'EN'
+export type Who = 'ALL' | 'NOT_SENT' | 'FAILED' | 'FILTER' | 'SELECTED'
+
+export const messageStatusNames: Record<MessageStatus, string> = {
+  QUEUED: 'Waiting to send',
+  SENDING: 'Sending',
+  SENT: 'Sent',
+  DELIVERED: 'Delivered',
+  READ: 'Read',
+  FAILED: 'Failed',
+}
+
+export const sendChannelNames: Record<SendChannel, string> = {
+  WHATSAPP: 'WhatsApp',
+  SMS: 'SMS',
+  WHATSAPP_THEN_SMS: 'WhatsApp, then SMS if it fails',
+}
+
+export interface SendRequest {
+  who: Who
+  cardTypeId?: string | null
+  group?: string | null
+  rsvp?: RsvpStatus | null
+  guestIds?: string[]
+  channel: SendChannel
+}
+
+export interface SendPreview {
+  guestCount: number
+  creditsNeeded: number
+  creditBalance: number
+  enoughCredits: boolean
+  skippedCount: number
+  skippedExamples: { guestId: string; nameOnCard: string; reason: string }[]
+  sampleSms: string | null
+  sampleSmsParts: number
+  sampleWhatsApp: string | null
+  cannotSendReason: string | null
+}
+
+export interface SendBatch {
+  id: string
+  channel: SendChannel
+  description: string
+  messageCount: number
+  creditsCharged: number
+  createdAt: string
+}
+
+export interface MessageDetails {
+  id: string
+  guestId: string
+  guestName: string | null
+  channel: MessageChannel
+  toPhone: string
+  text: string
+  status: MessageStatus
+  failureReason: string | null
+  creditsCharged: number
+  creditsRefunded: boolean
+  queuedAt: string
+  sentAt: string | null
+  deliveredAt: string | null
+  readAt: string | null
+}
+
+export interface SendingOverview {
+  totals: Record<MessageStatus, number>
+  recentBatches: SendBatch[]
+  recentFailures: MessageDetails[]
+  cannotSendReason: string | null
+  language: MessageLanguage
+  smsText: string | null
+  standardSmsWording: string
+  whatsAppWording: string
+  placeholders: string[]
+}
+
+/** Same rule as the server: plain letters 160 (then 153 per part), other characters 70 (then 67). */
+export function smsParts(text: string): number {
+  const plainLetters = [...text].every((letter) => letter.charCodeAt(0) < 128)
+  const single = plainLetters ? 160 : 70
+  const perPart = plainLetters ? 153 : 67
+  return text.length <= single ? 1 : Math.ceil(text.length / perPart)
 }

@@ -6,17 +6,21 @@ import { eventTypeNames } from '../../api/types'
 import { ErrorBox } from '../../components/ui'
 import { CardDesignTab } from './CardDesignTab'
 import { CardTypesTab } from './CardTypesTab'
-import { EventStatusBadge, formatEventDate, useEvent } from './eventHelpers'
+import { EventStatusBadge, formatEventDate, useCanEditEvents, useEvent } from './eventHelpers'
 import { GuestsTab } from './GuestsTab'
 import { OverviewTab } from './OverviewTab'
+import { SendCardsTab } from './SendCardsTab'
 
-const tabs = ['Overview', 'Guests', 'Card types', 'Card design'] as const
-type Tab = (typeof tabs)[number]
+const allTabs = ['Overview', 'Guests', 'Card types', 'Card design', 'Send cards'] as const
+type Tab = (typeof allTabs)[number]
 
 export function EventPage() {
   const { eventId } = useParams()
   const event = useEvent(eventId)
   const [openTab, setOpenTab] = useState<Tab>('Overview')
+  const canEdit = useCanEditEvents()
+  // Check-in staff don't send cards
+  const tabs = allTabs.filter((tab) => tab !== 'Send cards' || canEdit)
 
   if (event.isLoading) return <p className="text-ink-soft">Loading…</p>
   if (event.error || !event.data) return <ErrorBox error={event.error} />
@@ -55,6 +59,7 @@ export function EventPage() {
       {openTab === 'Guests' && <GuestsTab event={details} />}
       {openTab === 'Card types' && <CardTypesTab event={details} />}
       {openTab === 'Card design' && <CardDesignTab event={details} />}
+      {openTab === 'Send cards' && <SendCardsTab event={details} />}
     </div>
   )
 }
