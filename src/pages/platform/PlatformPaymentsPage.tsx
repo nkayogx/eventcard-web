@@ -5,7 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { api } from '../../api/apiClient'
 import { formatTzs, paymentStatusNames, type Payment, type PaymentStatus } from '../../api/types'
-import { Button, Card, ErrorBox, PageTitle } from '../../components/ui'
+import { Button, Card, ErrorBox, PageTitle } from '../../components/shared'
 
 const statusTabs: PaymentStatus[] = ['WAITING_FOR_PAYMENT', 'PAID', 'REJECTED', 'CANCELLED']
 
@@ -22,7 +22,7 @@ export function PlatformPaymentsPage() {
       <div className="flex flex-wrap gap-1">
         {statusTabs.map((tab) => (
           <button key={tab} onClick={() => setStatus(tab)}
-            className={`rounded-full px-3 py-1.5 text-sm ${status === tab ? 'bg-brand text-white' : 'bg-white text-ink-soft ring-1 ring-line'}`}>
+            className={`rounded-full px-3 py-1.5 text-sm ${status === tab ? 'bg-brand text-white' : 'bg-card text-ink-soft ring-1 ring-line'}`}>
             {paymentStatusNames[tab]}
           </button>
         ))}

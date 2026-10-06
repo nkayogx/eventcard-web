@@ -12,6 +12,7 @@ import { AcceptInvitationPage } from './pages/AcceptInvitationPage'
 import { BillingPage } from './pages/billing/BillingPage'
 import { CompanyProfilePage } from './pages/CompanyProfilePage'
 import { CustomDomainPage } from './pages/CustomDomainPage'
+import { DashboardPage } from './pages/DashboardPage'
 import { EventFormPage } from './pages/events/EventFormPage'
 import { EventPage } from './pages/events/EventPage'
 import { EventsPage } from './pages/events/EventsPage'
@@ -23,6 +24,10 @@ import { PlatformPaymentsPage } from './pages/platform/PlatformPaymentsPage'
 import { PlatformPricingPage } from './pages/platform/PlatformPricingPage'
 import { SignupPage } from './pages/SignupPage'
 import { StaffPage } from './pages/StaffPage'
+import { ConfirmProvider } from './components/ConfirmDialog'
+import { Toaster } from './components/ui/sonner'
+import { TooltipProvider } from './components/ui/tooltip'
+import { ThemeProvider } from './theme/ThemeContext'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false } },
@@ -32,7 +37,8 @@ const queryClient = new QueryClient({
 function HomePage() {
   const { me } = useAuth()
   if (me?.role === 'PLATFORM_ADMIN') return <Navigate to="/platform/companies" replace />
-  return <Navigate to="/events" replace />
+  if (me?.role === 'CHECK_IN_STAFF') return <Navigate to="/events" replace />
+  return <Navigate to="/dashboard" replace />
 }
 
 function App() {
@@ -48,6 +54,8 @@ function App() {
       {/* Pages that need a login */}
       <Route element={<RequireLogin><AppLayout /></RequireLogin>}>
         <Route path="/" element={<HomePage />} />
+        <Route path="/dashboard" element={
+          <RequireLogin roles={['OWNER', 'MANAGER']}><DashboardPage /></RequireLogin>} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/events/new" element={
           <RequireLogin roles={['OWNER', 'MANAGER']}><EventFormPage /></RequireLogin>} />
@@ -78,12 +86,20 @@ function App() {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <AuthProvider>
+            <TooltipProvider>
+              <ConfirmProvider>
+                <App />
+                {/* Small pop-up messages such as "Guest added" */}
+                <Toaster position="top-center" richColors />
+              </ConfirmProvider>
+            </TooltipProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ThemeProvider>
   </StrictMode>,
 )

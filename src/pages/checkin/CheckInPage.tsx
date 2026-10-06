@@ -7,7 +7,7 @@ import { Link, useParams } from 'react-router-dom'
 import { ApiError, api } from '../../api/apiClient'
 import type { ArrivalGuest, ArrivalSummary, CheckInMethod, LookUpResult } from '../../api/types'
 import { useAuth } from '../../auth/AuthContext'
-import { ErrorBox } from '../../components/ui'
+import { ErrorBox } from '../../components/shared'
 import { countOf, useEvent } from '../events/eventHelpers'
 import { QrScanner } from './QrScanner'
 
@@ -90,7 +90,7 @@ export function CheckInPage() {
       </div>
 
       {numbers && (
-        <div className="rounded-2xl bg-white p-4 text-center shadow-sm ring-1 ring-line">
+        <div className="rounded-2xl bg-card p-4 text-center shadow-sm ring-1 ring-line">
           <p className="text-3xl font-semibold">{numbers.peopleArrived} <span className="text-lg text-ink-soft">of {numbers.totalSeats}</span></p>
           <p className="text-sm text-ink-soft">people arrived · {countOf(numbers.cardsArrived, 'card')} of {numbers.totalCards}</p>
           <div className="mt-2 h-2 rounded-full bg-line"><div className="h-2 rounded-full bg-success" style={{ width: `${percent}%` }} /></div>
@@ -98,7 +98,7 @@ export function CheckInPage() {
       )}
       <ErrorBox error={summary.error} />
 
-      <div className="grid grid-cols-2 gap-1 rounded-xl bg-white p-1 ring-1 ring-line">
+      <div className="grid grid-cols-2 gap-1 rounded-xl bg-card p-1 ring-1 ring-line">
         {(['scan', 'search'] as const).map((option) => (
           <button key={option} onClick={() => { setMode(option); setResult(null) }}
             className={`rounded-lg py-2 text-sm font-medium ${mode === option ? 'bg-brand text-white' : 'text-ink-soft'}`}>
@@ -117,7 +117,7 @@ export function CheckInPage() {
           {/* A barcode scanner "types" the code here and presses Enter */}
           <form onSubmit={submitTypedCode} className="flex gap-2">
             <input value={typedCode} onChange={(e) => setTypedCode(e.target.value)} placeholder="Or type / scan the code"
-              aria-label="Card code" className="min-w-0 flex-1 rounded-lg border border-line bg-white px-3 py-2 text-sm" />
+              aria-label="Card code" className="min-w-0 flex-1 rounded-lg border border-line bg-card px-3 py-2 text-sm" />
             <button className="rounded-lg bg-brand px-4 text-sm text-white">Find</button>
           </form>
         </div>
@@ -165,7 +165,7 @@ function ResultCard(props: { result: LookUpResult; busy: boolean; onLetIn: (peop
             {/* Biggest button first: usually everyone on the card arrives together */}
             {Array.from({ length: guest.seatsLeft }, (_, index) => guest.seatsLeft - index).map((people) => (
               <button key={people} disabled={props.busy} onClick={() => props.onLetIn(people)}
-                className={`rounded-xl px-5 py-3 font-semibold ${people === guest.seatsLeft ? 'bg-success text-white' : 'bg-white ring-1 ring-line'}`}>
+                className={`rounded-xl px-5 py-3 font-semibold ${people === guest.seatsLeft ? 'bg-success text-white' : 'bg-card ring-1 ring-line'}`}>
                 Let {people} in
               </button>
             ))}
@@ -187,10 +187,10 @@ function SearchPanel({ eventId, onChoose }: { eventId: string; onChoose: (guest:
   return (
     <div className="space-y-2">
       <input autoFocus value={text} onChange={(e) => setText(e.target.value)} placeholder="Name or phone number"
-        aria-label="Search guests" className="w-full rounded-lg border border-line bg-white px-3 py-3" />
+        aria-label="Search guests" className="w-full rounded-lg border border-line bg-card px-3 py-3" />
       {found.data?.map((guest) => (
         <button key={guest.id} onClick={() => onChoose(guest)}
-          className="flex w-full items-center justify-between rounded-lg bg-white p-3 text-left ring-1 ring-line hover:bg-paper">
+          className="flex w-full items-center justify-between rounded-lg bg-card p-3 text-left ring-1 ring-line hover:bg-paper">
           <span>
             <span className="block font-medium">{guest.nameOnCard}</span>
             <span className="text-xs text-ink-soft">{guest.cardTypeName} · {countOf(guest.seats, 'seat')}</span>
@@ -212,7 +212,7 @@ function RecentCheckIns({ eventId, summary, canUndo }: { eventId: string; summar
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['arrivals', eventId] }),
   })
   return (
-    <div className="rounded-2xl bg-white p-4 ring-1 ring-line">
+    <div className="rounded-2xl bg-card p-4 ring-1 ring-line">
       <p className="mb-2 text-sm font-medium">Just arrived</p>
       <ul className="space-y-1 text-sm">
         {summary.recentCheckIns.slice(0, 8).map((checkIn) => (

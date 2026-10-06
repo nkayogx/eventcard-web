@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
 import { api } from '../../api/apiClient'
 import { formatTzs, type CreditPack, type MessagePrice, type Plan } from '../../api/types'
-import { Button, Card, ErrorBox, PageTitle, TextField } from '../../components/ui'
+import { Button, Card, ErrorBox, PageTitle, TextField } from '../../components/shared'
 
 export function PlatformPricingPage() {
   return (

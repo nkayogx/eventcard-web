@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
 import { api } from '../../api/apiClient'
 import { messageStatusNames, sendChannelNames, type EventDetails, type Guest, type MessageDetails, type SendChannel } from '../../api/types'
-import { Button, Card, ErrorBox, SelectField, TextField } from '../../components/ui'
+import { Button, Card, ErrorBox, SelectField, TextField } from '../../components/shared'
 
 interface Props {
   event: EventDetails
@@ -133,7 +133,7 @@ function SendToGuest({ event, guest }: { event: EventDetails; guest: Guest }) {
       <p className="text-sm font-medium">{guest.cardStatus ? 'Resend card' : 'Send card'}</p>
       <div className="flex gap-2">
         <select aria-label="Send by" value={channel} onChange={(e) => setChannel(e.target.value as SendChannel)}
-          className="min-w-0 flex-1 rounded-lg border border-line bg-white px-2 py-1.5 text-sm">
+          className="min-w-0 flex-1 rounded-lg border border-line bg-card px-2 py-1.5 text-sm">
           {(Object.keys(sendChannelNames) as SendChannel[]).map((option) => (
             <option key={option} value={option}>{sendChannelNames[option]}</option>
           ))}

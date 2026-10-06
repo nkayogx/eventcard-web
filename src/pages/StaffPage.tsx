@@ -6,7 +6,7 @@ import { useState, type FormEvent } from 'react'
 import { api } from '../api/apiClient'
 import { roleNames, type InvitationCreated, type StaffMember, type UserRole } from '../api/types'
 import { useAuth } from '../auth/AuthContext'
-import { Button, Card, ErrorBox, PageTitle, SelectField, StatusBadge, TextField } from '../components/ui'
+import { Button, Card, ErrorBox, PageTitle, SelectField, StatusBadge, TextField } from '../components/shared'
 
 const companyRoles: UserRole[] = ['OWNER', 'MANAGER', 'CHECK_IN_STAFF']
 const roleChoices = companyRoles.map((role) => ({ value: role, label: roleNames[role] }))
@@ -74,7 +74,7 @@ function StaffRow({ person, canEdit }: { person: StaffMember; canEdit: boolean }
             value={person.role}
             disabled={change.isPending}
             onChange={(e) => change.mutate({ role: e.target.value as UserRole })}
-            className="rounded-lg border border-line bg-white px-2 py-1"
+            className="rounded-lg border border-line bg-card px-2 py-1"
           >
             {roleChoices.map((choice) => (
               <option key={choice.value} value={choice.value}>{choice.label}</option>
@@ -144,7 +144,7 @@ function InviteForm() {
           </p>
           <div className="mt-3 flex flex-col gap-2 sm:flex-row">
             <input readOnly value={invite.data.invitationLink}
-              className="flex-1 rounded-lg border border-line bg-white px-3 py-2 font-mono text-xs" />
+              className="flex-1 rounded-lg border border-line bg-card px-3 py-2 font-mono text-xs" />
             <Button look="secondary" type="button" onClick={() => copyLink(invite.data.invitationLink)}>
               {copied ? 'Copied ✓' : 'Copy link'}
             </Button>

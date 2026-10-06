@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
 import { api } from '../api/apiClient'
 import type { CompanyDetails } from '../api/types'
-import { Button, Card, ErrorBox, PageTitle, StatusBadge, SuccessBox, TextField } from '../components/ui'
+import { Button, Card, ErrorBox, PageTitle, StatusBadge, SuccessBox, TextField } from '../components/shared'
 
 export function CustomDomainPage() {
   const queryClient = useQueryClient()

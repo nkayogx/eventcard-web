@@ -5,7 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { api } from '../api/apiClient'
 import { type CompanyDetails, type CompanyPage, type CompanyRow as CompanyListRow } from '../api/types'
-import { Button, Card, ErrorBox, PageTitle, StatusBadge } from '../components/ui'
+import { Button, Card, ErrorBox, PageTitle, StatusBadge } from '../components/shared'
 
 export function PlatformCompaniesPage() {
   const [search, setSearch] = useState('')
@@ -29,7 +29,7 @@ export function PlatformCompaniesPage() {
           setSearch(e.target.value)
           setPage(0)
         }}
-        className="w-full max-w-sm rounded-lg border border-line bg-white px-3 py-2 outline-none focus:border-brand"
+        className="w-full max-w-sm rounded-lg border border-line bg-card px-3 py-2 outline-none focus:border-brand"
       />
 
       <Card className="overflow-x-auto p-0">

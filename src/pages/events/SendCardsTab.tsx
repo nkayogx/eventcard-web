@@ -10,7 +10,7 @@ import {
   type EventDetails, type MessageLanguage, type MessageStatus, type RsvpStatus, type SendBatch,
   type SendChannel, type SendingOverview, type SendPreview, type SendRequest, type Who,
 } from '../../api/types'
-import { Button, Card, ErrorBox, SuccessBox } from '../../components/ui'
+import { Button, Card, ErrorBox, SuccessBox } from '../../components/shared'
 import { countOf, isReadOnly } from './eventHelpers'
 
 const whoChoices: { value: Who; label: string }[] = [
@@ -120,7 +120,7 @@ function SendForm({ event, overview }: { event: EventDetails; overview: SendingO
       <label className="block text-sm">
         <span className="mb-1 block font-medium">Who</span>
         <select value={who} onChange={(e) => setWho(e.target.value as Who)}
-          className="w-full rounded-lg border border-line bg-white px-3 py-2">
+          className="w-full rounded-lg border border-line bg-card px-3 py-2">
           {whoChoices.map((choice) => <option key={choice.value} value={choice.value}>{choice.label}</option>)}
         </select>
       </label>
@@ -128,19 +128,19 @@ function SendForm({ event, overview }: { event: EventDetails; overview: SendingO
       {who === 'FILTER' && (
         <div className="grid gap-2 sm:grid-cols-3">
           <select aria-label="Card type" value={cardTypeId} onChange={(e) => setCardTypeId(e.target.value)}
-            className="rounded-lg border border-line bg-white px-2 py-2 text-sm">
+            className="rounded-lg border border-line bg-card px-2 py-2 text-sm">
             <option value="">Any card type</option>
             {event.cardTypes.map((type) => <option key={type.id} value={type.id}>{type.name}</option>)}
           </select>
           <select aria-label="Group" value={group} onChange={(e) => setGroup(e.target.value)}
-            className="rounded-lg border border-line bg-white px-2 py-2 text-sm">
+            className="rounded-lg border border-line bg-card px-2 py-2 text-sm">
             <option value="">Any group</option>
             {event.groups.filter((g) => g.groupName).map((g) => (
               <option key={g.groupName} value={g.groupName ?? ''}>{g.groupName}</option>
             ))}
           </select>
           <select aria-label="RSVP" value={rsvp} onChange={(e) => setRsvp(e.target.value as RsvpStatus | '')}
-            className="rounded-lg border border-line bg-white px-2 py-2 text-sm">
+            className="rounded-lg border border-line bg-card px-2 py-2 text-sm">
             <option value="">Any RSVP</option>
             {(Object.keys(rsvpNames) as RsvpStatus[]).map((status) => (
               <option key={status} value={status}>{rsvpNames[status]}</option>
@@ -230,7 +230,7 @@ function WordingCard({ event, overview }: { event: EventDetails; overview: Sendi
         <span className="mb-1 block text-sm font-medium">SMS text</span>
         <textarea rows={4} maxLength={800} value={smsText} placeholder={overview.standardSmsWording}
           onChange={(e) => setSmsText(e.target.value)}
-          className="w-full rounded-lg border border-line bg-white px-3 py-2 text-sm outline-none focus:border-brand" />
+          className="w-full rounded-lg border border-line bg-card px-3 py-2 text-sm outline-none focus:border-brand" />
       </label>
       <div className="flex flex-wrap items-center gap-1 text-xs">
         <span className="text-ink-soft">Insert:</span>

@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { api } from '../../api/apiClient'
 import { eventStatusNames, eventTypeNames, type EventPage, type EventStatus } from '../../api/types'
-import { Button, ErrorBox, PageTitle } from '../../components/ui'
+import { Button, ErrorBox, PageTitle } from '../../components/shared'
 import { countOf, EventStatusBadge, formatEventDate, useCanEditEvents } from './eventHelpers'
 
 const statusFilters: (EventStatus | '')[] = ['', 'DRAFT', 'ACTIVE', 'FINISHED', 'CANCELLED']
@@ -41,7 +41,7 @@ export function EventsPage() {
             setSearch(e.target.value)
             setPage(0)
           }}
-          className="w-full max-w-xs rounded-lg border border-line bg-white px-3 py-2 outline-none focus:border-brand"
+          className="w-full max-w-xs rounded-lg border border-line bg-card px-3 py-2 outline-none focus:border-brand"
         />
         <div className="flex flex-wrap gap-1">
           {statusFilters.map((option) => (
@@ -52,7 +52,7 @@ export function EventsPage() {
                 setPage(0)
               }}
               className={`rounded-full px-3 py-1.5 text-sm ${
-                status === option ? 'bg-brand text-white' : 'bg-white text-ink-soft ring-1 ring-line hover:bg-paper'
+                status === option ? 'bg-brand text-white' : 'bg-card text-ink-soft ring-1 ring-line hover:bg-paper'
               }`}
             >
               {option === '' ? 'All' : eventStatusNames[option]}
@@ -65,7 +65,7 @@ export function EventsPage() {
       {events.isLoading && <p className="text-ink-soft">Loading…</p>}
 
       {events.data && events.data.events.length === 0 && (
-        <div className="rounded-xl border border-dashed border-line bg-white p-10 text-center">
+        <div className="rounded-xl border border-dashed border-line bg-card p-10 text-center">
           <p className="font-medium">No events yet</p>
           <p className="mt-1 text-sm text-ink-soft">
             {canEdit ? 'Create your first event to start building its guest list.' : 'Nothing to show here.'}
@@ -78,7 +78,7 @@ export function EventsPage() {
           <Link
             key={event.id}
             to={!canEdit && event.status === 'ACTIVE' ? `/events/${event.id}/check-in` : `/events/${event.id}`}
-            className="rounded-xl border border-line bg-white p-5 transition hover:border-brand/40 hover:shadow-sm"
+            className="rounded-xl border border-line bg-card p-5 transition hover:border-brand/40 hover:shadow-sm"
           >
             <div className="flex items-start justify-between gap-3">
               <p className="text-xs font-medium uppercase tracking-wide text-ink-soft">{eventTypeNames[event.eventType]}</p>

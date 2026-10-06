@@ -6,7 +6,7 @@
 
 import { useEffect, useRef, useState, type PointerEvent } from 'react'
 import { fieldNames, fontNames, type CardField, type CardFont, type FieldSettings, type TextAlign } from '../../api/types'
-import { Button, ErrorBox } from '../../components/ui'
+import { Button, ErrorBox } from '../../components/shared'
 
 /** How each card font looks in the browser (the server uses the same fonts). */
 const cssFonts: Record<CardFont, { family: string; weight: number }> = {
@@ -120,7 +120,7 @@ export function ArtworkEditor(props: Props) {
               }}
             >
               {box.field === 'QR_CODE' ? (
-                <div className="flex aspect-square h-full max-w-full items-center justify-center bg-white text-[10px] font-medium text-ink">
+                <div className="flex aspect-square h-full max-w-full items-center justify-center bg-card text-[10px] font-medium text-ink">
                   QR
                 </div>
               ) : (
@@ -163,7 +163,7 @@ export function ArtworkEditor(props: Props) {
               key={box.field}
               onClick={() => setSelected(box.field)}
               className={`rounded-full px-3 py-1 text-sm ${
-                selected === box.field ? 'bg-brand text-white' : 'bg-white text-ink-soft ring-1 ring-line'
+                selected === box.field ? 'bg-brand text-white' : 'bg-card text-ink-soft ring-1 ring-line'
               }`}
             >
               {fieldNames[box.field]}
@@ -185,7 +185,7 @@ export function ArtworkEditor(props: Props) {
                   <span className="mb-1 block font-medium">Font</span>
                   <select value={selectedBox.font}
                     onChange={(e) => changeBox(selectedBox.field, { font: e.target.value as CardFont })}
-                    className="w-full rounded-lg border border-line bg-white px-2 py-1.5">
+                    className="w-full rounded-lg border border-line bg-card px-2 py-1.5">
                     {Object.entries(fontNames).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                   </select>
                 </label>

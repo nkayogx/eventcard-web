@@ -7,7 +7,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { api } from '../api/apiClient'
 import { roleNames, type InvitationDetails, type LoginResponse } from '../api/types'
 import { useAuth } from '../auth/AuthContext'
-import { Button, ErrorBox, TextField } from '../components/ui'
+import { Button, ErrorBox, TextField } from '../components/shared'
 import { PublicLayout } from '../layout/PublicLayout'
 
 export function AcceptInvitationPage() {

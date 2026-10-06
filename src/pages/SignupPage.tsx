@@ -7,7 +7,7 @@ import { api } from '../api/apiClient'
 import type { LoginResponse } from '../api/types'
 import { useAuth } from '../auth/AuthContext'
 import { countryChoices, myTimeZone, timeZoneChoices } from '../components/choices'
-import { Button, ErrorBox, SelectField, TextField } from '../components/ui'
+import { Button, ErrorBox, SelectField, TextField } from '../components/shared'
 import { PublicLayout } from '../layout/PublicLayout'
 
 export function SignupPage() {
@@ -27,7 +27,7 @@ export function SignupPage() {
     mutationFn: () => api.post<LoginResponse>('/api/auth/signup-company', form),
     onSuccess: (response) => {
       logIn(response)
-      navigate('/events')
+      navigate('/')
     },
   })
 

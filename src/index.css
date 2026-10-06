@@ -1,28 +1,195 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+/* "dark:" classes apply inside an element with class="dark" (set on <html> by the theme switch) */
+@custom-variant dark (&:is(.dark *));
 
 /*
-  Our colours and fonts in one place.
-  Use them in class names, e.g. "bg-brand", "text-ink-soft".
+  ============================================================
+  OUR LOOK: warm and elegant.
+  All colours live here as named values. Change a value once,
+  and every screen follows. The ".dark" block is the dark mode.
+  ============================================================
 */
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+:root {
+  --radius: 0.75rem;
 
-  --color-brand: #7a1f3d;
-  --color-brand-dark: #5c1530;
-  --color-brand-soft: #f7e9ee;
+  /* Page and surfaces: warm ivory with white cards */
+  --background: #fbf7f4;
+  --foreground: #2a1d22;
+  --card: #ffffff;
+  --card-foreground: #2a1d22;
+  --popover: #ffffff;
+  --popover-foreground: #2a1d22;
 
-  --color-ink: #1f1a1c;
-  --color-ink-soft: #6b6266;
-  --color-line: #e8e2e4;
-  --color-paper: #fbf9f8;
+  /* Deep wine: buttons, links, active menu items */
+  --primary: #7a1f3d;
+  --primary-foreground: #fff8f5;
 
-  --color-danger: #b42318;
-  --color-danger-soft: #fdecea;
-  --color-success: #1f7a4d;
-  --color-success-soft: #e6f4ec;
-  --color-warning-soft: #fff4e0;
+  /* Blush and rose: soft highlights */
+  --secondary: #f5e6ea;
+  --secondary-foreground: #5c1530;
+  --accent: #f6ebe4;
+  --accent-foreground: #5c1530;
+  --muted: #f3ece8;
+  --muted-foreground: #7a6a70;
+
+  /* Warm gold: small touches (badges, "Pro", chart highlights) */
+  --gold: #c8a15a;
+  --gold-foreground: #3d2a0a;
+
+  /* Messages */
+  --destructive: #c0392b;
+  --success: #2e7d57;
+  --success-soft: #e3f2ea;
+  --warning: #9a6a0b;
+  --warning-soft: #fff3dc;
+  --danger-soft: #fce8e6;
+
+  /* Lines and form fields */
+  --border: #eadfdb;
+  --input: #e2d5d0;
+  --ring: #7a1f3d;
+
+  /* Charts */
+  --chart-1: #7a1f3d;
+  --chart-2: #c8a15a;
+  --chart-3: #d9869d;
+  --chart-4: #3f7f7a;
+  --chart-5: #a35d7b;
+
+  /* Side menu */
+  --sidebar: #fffdfb;
+  --sidebar-foreground: #2a1d22;
+  --sidebar-primary: #7a1f3d;
+  --sidebar-primary-foreground: #fff8f5;
+  --sidebar-accent: #f5e6ea;
+  --sidebar-accent-foreground: #5c1530;
+  --sidebar-border: #eadfdb;
+  --sidebar-ring: #7a1f3d;
 }
 
-body {
-  @apply bg-paper text-ink font-sans antialiased;
+.dark {
+  --background: #1a1315;
+  --foreground: #f3e9e6;
+  --card: #231a1d;
+  --card-foreground: #f3e9e6;
+  --popover: #231a1d;
+  --popover-foreground: #f3e9e6;
+
+  --primary: #d9708f;
+  --primary-foreground: #1a1315;
+
+  --secondary: #3a2530;
+  --secondary-foreground: #f3dce3;
+  --accent: #33262b;
+  --accent-foreground: #f3dce3;
+  --muted: #2c2226;
+  --muted-foreground: #b8a6ac;
+
+  --gold: #d6b26b;
+  --gold-foreground: #1a1315;
+
+  --destructive: #e5675a;
+  --success: #5cc08e;
+  --success-soft: #1f3329;
+  --warning: #e6b75a;
+  --warning-soft: #3a2e17;
+  --danger-soft: #3d2023;
+
+  --border: #3a2d31;
+  --input: #45363b;
+  --ring: #d9708f;
+
+  --chart-1: #d9708f;
+  --chart-2: #d6b26b;
+  --chart-3: #8fc7c0;
+  --chart-4: #b88ab0;
+  --chart-5: #e5a88f;
+
+  --sidebar: #1f1719;
+  --sidebar-foreground: #f3e9e6;
+  --sidebar-primary: #d9708f;
+  --sidebar-primary-foreground: #1a1315;
+  --sidebar-accent: #33262b;
+  --sidebar-accent-foreground: #f3dce3;
+  --sidebar-border: #3a2d31;
+  --sidebar-ring: #d9708f;
+}
+
+/* Makes the colours above usable as Tailwind classes, e.g. "bg-primary", "text-muted-foreground" */
+@theme inline {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-heading: "Playfair Display", ui-serif, Georgia, serif;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger-soft: var(--danger-soft);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /*
+    Older names used by pages written before the redesign.
+    They point at the new colours, so those pages follow the new look (and dark mode)
+    until they are rewritten.
+  */
+  --color-brand: var(--primary);
+  --color-brand-dark: var(--secondary-foreground);
+  --color-brand-soft: var(--secondary);
+  --color-ink: var(--foreground);
+  --color-ink-soft: var(--muted-foreground);
+  --color-line: var(--border);
+  --color-paper: var(--muted);
+  --color-danger: var(--destructive);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  /* Page titles use the elegant serif font */
+  h1 {
+    @apply font-heading;
+  }
 }

@@ -3,7 +3,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { api } from '../../api/apiClient'
 import { AuthorizedImage } from '../../components/AuthorizedImage'
-import { Button } from '../../components/ui'
+import { Button } from '../../components/shared'
 
 interface Props {
   title: string
@@ -20,7 +20,7 @@ export function CardPreviewDialog({ title, imagePath, downloadName, onClose }: P
       <div
         role="dialog"
         aria-label={title}
-        className="max-h-full w-full max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-xl"
+        className="max-h-full w-full max-w-md overflow-y-auto rounded-2xl bg-card p-5 shadow-xl"
         onClick={(clickEvent) => clickEvent.stopPropagation()} // clicks inside don't close it
       >
         <div className="mb-3 flex items-center justify-between">

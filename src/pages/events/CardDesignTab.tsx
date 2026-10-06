@@ -11,7 +11,7 @@ import {
   templateNames, type CardDesignDetails, type CardTemplate, type EventDetails, type FieldSettings,
 } from '../../api/types'
 import { AuthorizedImage } from '../../components/AuthorizedImage'
-import { Button, Card, ErrorBox, SuccessBox } from '../../components/ui'
+import { Button, Card, ErrorBox, SuccessBox } from '../../components/shared'
 import { ArtworkEditor } from './ArtworkEditor'
 import { CardPreviewDialog } from './CardPreviewDialog'
 import { isReadOnly, useCanEditEvents } from './eventHelpers'
@@ -195,7 +195,7 @@ function StyleChoice(props: {
       type="button"
       disabled={props.disabled}
       onClick={props.onChoose}
-      className={`overflow-hidden rounded-xl border-2 bg-white text-left transition disabled:cursor-default ${
+      className={`overflow-hidden rounded-xl border-2 bg-card text-left transition disabled:cursor-default ${
         props.chosen ? 'border-brand ring-2 ring-brand/20' : 'border-line hover:border-brand/40'
       }`}
     >
@@ -227,7 +227,7 @@ function TemplateWording(props: {
       <textarea
         rows={2} maxLength={300} value={text} disabled={!props.canChange}
         onChange={(e) => setText(e.target.value)}
-        className="w-full rounded-lg border border-line bg-white px-3 py-2 outline-none focus:border-brand"
+        className="w-full rounded-lg border border-line bg-card px-3 py-2 outline-none focus:border-brand"
       />
       {props.canChange && (
         <Button busy={props.saving} disabled={text === props.design.invitationText} onClick={() => props.onSave(text)}>

@@ -6,7 +6,7 @@ import { api } from '../api/apiClient'
 import type { CompanyDetails } from '../api/types'
 import { useAuth } from '../auth/AuthContext'
 import { countryChoices, timeZoneChoices } from '../components/choices'
-import { Button, Card, ErrorBox, PageTitle, SelectField, SuccessBox, TextField } from '../components/ui'
+import { Button, Card, ErrorBox, PageTitle, SelectField, SuccessBox, TextField } from '../components/shared'
 
 const DEFAULT_PRIMARY = '#7A1F3D'
 const DEFAULT_SECONDARY = '#F7E9EE'
@@ -193,7 +193,7 @@ function ColourPicker(props: {
         aria-label={`${props.label} picker`}
         value={props.value}
         onChange={(e) => props.onChange(e.target.value.toUpperCase())}
-        className="h-10 w-12 cursor-pointer rounded border border-line bg-white p-1"
+        className="h-10 w-12 cursor-pointer rounded border border-line bg-card p-1"
       />
       <div className="flex-1">
         <TextField label={props.label} name={props.name} value={props.value} error={props.error}

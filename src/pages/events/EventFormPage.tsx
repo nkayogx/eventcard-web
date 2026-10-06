@@ -5,7 +5,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { api } from '../../api/apiClient'
 import { eventTypeNames, type EventDetails, type EventType } from '../../api/types'
-import { Button, Card, ErrorBox, PageTitle, SelectField, TextField } from '../../components/ui'
+import { Button, Card, ErrorBox, PageTitle, SelectField, TextField } from '../../components/shared'
 import { useEvent } from './eventHelpers'
 
 interface EventForm {
@@ -154,7 +154,7 @@ export function EventFormPage() {
             <textarea
               name="extraInfo" rows={4} maxLength={2000} placeholder="Programme, parking, gifts…"
               value={form.extraInfo} onChange={(e) => update('extraInfo', e.target.value)}
-              className="w-full rounded-lg border border-line bg-white px-3 py-2 outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+              className="w-full rounded-lg border border-line bg-card px-3 py-2 outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
             />
           </label>
         </Card>

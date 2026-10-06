@@ -7,7 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, type ChangeEvent } from 'react'
 import { api } from '../../api/apiClient'
 import type { EventDetails, ImportDuplicate, ImportPreview, ImportProblem, ImportResult } from '../../api/types'
-import { Button, Card, ErrorBox, SuccessBox } from '../../components/ui'
+import { Button, Card, ErrorBox, SuccessBox } from '../../components/shared'
 import { Link } from 'react-router-dom'
 import { countOf } from './eventHelpers'
 

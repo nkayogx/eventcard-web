@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { eventTypeNames } from '../../api/types'
-import { ErrorBox } from '../../components/ui'
+import { ErrorBox } from '../../components/shared'
 import { CardDesignTab } from './CardDesignTab'
 import { CardTypesTab } from './CardTypesTab'
 import { EventStatusBadge, formatEventDate, useCanEditEvents, useEvent } from './eventHelpers'

@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { api } from '../../api/apiClient'
 import { sendChannelNames, type EventDetails, type SendBatch, type SendChannel, type SendPreview, type SendRequest } from '../../api/types'
-import { Button, ErrorBox } from '../../components/ui'
+import { Button, ErrorBox } from '../../components/shared'
 import { countOf } from './eventHelpers'
 
 interface Props {
@@ -43,7 +43,7 @@ export function SendToSelectedDialog({ event, guestIds, onSent, onClose }: Props
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 p-4" onClick={onClose}>
       <div role="dialog" aria-label="Send cards to selected guests"
-        className="w-full max-w-md space-y-4 rounded-2xl bg-white p-6 shadow-xl"
+        className="w-full max-w-md space-y-4 rounded-2xl bg-card p-6 shadow-xl"
         onClick={(clickEvent) => clickEvent.stopPropagation()}>
         <div className="flex items-center justify-between">
           <h2 className="font-semibold">Send cards to {countOf(guestIds.length, 'selected guest')}</h2>

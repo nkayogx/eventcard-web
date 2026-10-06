@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
 import { api } from '../../api/apiClient'
 import { formatTzs, type Payment } from '../../api/types'
-import { Button, Card, ErrorBox, TextField } from '../../components/ui'
+import { Button, Card, ErrorBox, TextField } from '../../components/shared'
 
 export function PaymentPanel({ payment, canPay }: { payment: Payment; canPay: boolean }) {
   const queryClient = useQueryClient()

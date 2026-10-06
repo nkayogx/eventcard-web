@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { api } from '../../api/apiClient'
 import type { ArrivalSummary, EventDetails, EventStatus } from '../../api/types'
 import { useAuth } from '../../auth/AuthContext'
-import { Button, Card, ErrorBox } from '../../components/ui'
+import { Button, Card, ErrorBox } from '../../components/shared'
 import { countOf, formatEventDate, isReadOnly, useCanEditEvents } from './eventHelpers'
 
 /** The button text for moving to each status, and what we ask before doing it. */

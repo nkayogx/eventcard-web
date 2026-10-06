@@ -9,7 +9,7 @@ import {
   type BillingOverview, type CreditStatement, type Payment, type Plan,
 } from '../../api/types'
 import { useAuth } from '../../auth/AuthContext'
-import { Button, Card, ErrorBox, PageTitle } from '../../components/ui'
+import { Button, Card, ErrorBox, PageTitle } from '../../components/shared'
 import { PaymentPanel } from './PaymentPanel'
 
 export function BillingPage() {
@@ -155,7 +155,7 @@ function PlanChoices({ billing, canPay }: { billing: BillingOverview; canPay: bo
           <label className="flex items-center gap-2 text-sm">
             Pay for
             <select value={months} onChange={(e) => setMonths(Number(e.target.value))}
-              className="rounded-lg border border-line bg-white px-2 py-1">
+              className="rounded-lg border border-line bg-card px-2 py-1">
               {[1, 3, 6, 12].map((count) => (
                 <option key={count} value={count}>{count} {count === 1 ? 'month' : 'months'}</option>
               ))}

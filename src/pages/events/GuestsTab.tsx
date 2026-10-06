@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { api } from '../../api/apiClient'
 import { messageStatusNames, rsvpNames, type EventDetails, type Guest, type GuestPage, type MessageStatus, type RsvpStatus } from '../../api/types'
-import { Button, Card, ErrorBox } from '../../components/ui'
+import { Button, Card, ErrorBox } from '../../components/shared'
 import { CardPreviewDialog } from './CardPreviewDialog'
 import { countOf, isReadOnly, useCanEditEvents } from './eventHelpers'
 import { GuestPanel } from './GuestPanel'
@@ -87,17 +87,17 @@ export function GuestsTab({ event }: { event: EventDetails }) {
           <input
             type="search" placeholder="Search name or phone…" value={search}
             onChange={(e) => filterBy(setSearch, e.target.value)}
-            className="w-full max-w-xs rounded-lg border border-line bg-white px-3 py-2 outline-none focus:border-brand"
+            className="w-full max-w-xs rounded-lg border border-line bg-card px-3 py-2 outline-none focus:border-brand"
           />
           <select aria-label="Card type" value={cardTypeId} onChange={(e) => filterBy(setCardTypeId, e.target.value)}
-            className="rounded-lg border border-line bg-white px-3 py-2">
+            className="rounded-lg border border-line bg-card px-3 py-2">
             <option value="">All card types</option>
             {event.cardTypes.map((cardType) => (
               <option key={cardType.id} value={cardType.id}>{cardType.name}</option>
             ))}
           </select>
           <select aria-label="RSVP" value={rsvp} onChange={(e) => filterBy(setRsvp, e.target.value)}
-            className="rounded-lg border border-line bg-white px-3 py-2">
+            className="rounded-lg border border-line bg-card px-3 py-2">
             <option value="">All RSVP answers</option>
             {(Object.keys(rsvpNames) as RsvpStatus[]).map((status) => (
               <option key={status} value={status}>{rsvpNames[status]}</option>
@@ -105,7 +105,7 @@ export function GuestsTab({ event }: { event: EventDetails }) {
           </select>
           {(guests.data?.groupNames.length ?? 0) > 0 && (
             <select aria-label="Group" value={group} onChange={(e) => filterBy(setGroup, e.target.value)}
-              className="rounded-lg border border-line bg-white px-3 py-2">
+              className="rounded-lg border border-line bg-card px-3 py-2">
               <option value="">All groups</option>
               {guests.data?.groupNames.map((name) => <option key={name} value={name}>{name}</option>)}
             </select>
